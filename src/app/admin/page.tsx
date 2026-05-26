@@ -5,7 +5,6 @@ import { api } from "@/lib/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { cn, formatDateTime } from "@/lib/utils";
 import { 
   UsersIcon, 
@@ -21,6 +20,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
+import { AdminOverviewSkeleton } from "./skeleton";
 
 interface AuditLog {
   id: string;
@@ -101,24 +101,7 @@ export default function AdminOverviewPage() {
     : "0.00";
 
   if (loading) {
-    return (
-      <div className="space-y-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <Skeleton className="h-9 w-48 mb-2" />
-            <Skeleton className="h-5 w-72" />
-          </div>
-          <Skeleton className="h-10 w-36" />
-        </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} className="h-28 rounded-xl" />
-          ))}
-        </div>
-        <Skeleton className="h-[350px] rounded-xl" />
-        <Skeleton className="h-64 rounded-xl" />
-      </div>
-    );
+    return <AdminOverviewSkeleton />;
   }
 
   return (

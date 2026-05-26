@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,18 +20,21 @@ export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
-
+    if (!email) {
+      toast.error("Silakan masukkan email Anda.");
+      return;
+    }
     setLoading(true);
-    // Simulate reset request
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setLoading(false);
-    setSubmitted(true);
-    toast.success("Instruksi reset password terkirim!", {
-      description: `Kami telah mengirimkan link reset password ke ${email}.`,
-    });
+    // Simulate sending email reset
+    setTimeout(() => {
+      setLoading(false);
+      setSubmitted(true);
+      toast.success("Instruksi reset password terkirim!", {
+        description: `Kami telah mengirimkan link reset password ke ${email}.`,
+      });
+    }, 1500);
   };
 
   return (
@@ -46,9 +50,12 @@ export default function ForgotPasswordPage() {
         {/* Logo floating above card */}
         <div className="flex justify-center mb-2">
           <Link href="/">
-            <img
+            <Image
               src="/images/logo-text-realsend.png"
               alt="RealSend Logo"
+              width={160}
+              height={40}
+              priority
               className="h-10 w-auto object-contain hover:opacity-90 transition-opacity"
             />
           </Link>

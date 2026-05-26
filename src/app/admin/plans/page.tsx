@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useConfirm } from "@/hooks/use-confirm";
+import { AdminPlansSkeleton } from "./skeleton";
 
 interface Plan {
   id: string;
@@ -111,6 +112,10 @@ export default function PlanManagementPage() {
     }
     return pages;
   };
+
+  if (loading) {
+    return <AdminPlansSkeleton />;
+  }
 
   return (
     <div className="space-y-8">

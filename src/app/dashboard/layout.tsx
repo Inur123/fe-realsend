@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
-import { api } from "@/lib/api";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -37,7 +36,6 @@ export default function DashboardLayout({
   const { user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const [planLimit, setPlanLimit] = useState<number | null>(null);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -45,34 +43,8 @@ export default function DashboardLayout({
     }
   }, [isLoading, isAuthenticated, router]);
 
-  useEffect(() => {
-    let active = true;
-
-    const loadPlanLimits = async () => {
-      try {
-        const plans = await api.plans.list();
-        if (!active) return;
-
-        const activePlanSlug = user?.plan_slug || "free";
-        const activePlan = plans?.find((plan) => plan.slug === activePlanSlug);
-        const fallback = PLAN_FALLBACKS[activePlanSlug] || PLAN_FALLBACKS.free;
-        setPlanLimit(activePlan?.daily_email_limit ?? fallback.daily_email_limit);
-      } catch {
-        if (!active) return;
-        const activePlanSlug = user?.plan_slug || "free";
-        const fallback = PLAN_FALLBACKS[activePlanSlug] || PLAN_FALLBACKS.free;
-        setPlanLimit(fallback.daily_email_limit);
-      }
-    };
-
-    if (isAuthenticated) {
-      loadPlanLimits();
-    }
-
-    return () => {
-      active = false;
-    };
-  }, [isAuthenticated, user?.plan_slug]);
+  // Plan limit is derived directly from fallback map — no extra API call needed.
+  // The user's plan_slug already comes from the AuthContext (set at login/refresh).
 
   // Generate dynamic breadcrumbs based on pathname
   const getBreadcrumbs = () => {
@@ -128,7 +100,7 @@ export default function DashboardLayout({
   const sub = user?.subscription;
   const emailsSentToday = sub?.emails_sent_today || 0;
   const activePlanSlug = user?.plan_slug || "free";
-  const dailyQuota = planLimit || PLAN_FALLBACKS[activePlanSlug]?.daily_email_limit || PLAN_FALLBACKS.free.daily_email_limit;
+  const dailyQuota = PLAN_FALLBACKS[activePlanSlug]?.daily_email_limit ?? PLAN_FALLBACKS.free.daily_email_limit;
   const quotaPercentage = Math.min((emailsSentToday / dailyQuota) * 100, 100);
 
   return (

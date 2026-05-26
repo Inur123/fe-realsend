@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+/* Google Fonts are loaded via <link> in layout.tsx (non-blocking) */
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -78,7 +78,7 @@ html  { scroll-behavior: smooth; }
 body  {
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-inter), system-ui, sans-serif;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
@@ -252,7 +252,7 @@ input:-internal-autofill-selected {
   display: flex;
   align-items: center;
   justify-content: center;
-  shrink: 0;
+  flex-shrink: 0;
   border: 1px solid;
   margin-bottom: 1rem;
 }
@@ -298,7 +298,7 @@ input:-internal-autofill-selected {
   border-bottom: 1px solid var(--border);
   background: var(--bg-secondary);
 }
-.rs-code__dot { width: 0.6rem; height: 0.6rem; border-radius: 50%; shrink: 0; }
+.rs-code__dot { width: 0.6rem; height: 0.6rem; border-radius: 50%; flex-shrink: 0; }
 .rs-code__body { padding: 1.25rem; overflow-x: auto; }
 
 /* ============================================

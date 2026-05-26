@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Clock3Icon, MapPinIcon, MonitorIcon, NetworkIcon, ShieldAlertIcon, InfoIcon } from "lucide-react";
 import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDateTime } from "@/lib/utils";
 import { toast } from "sonner";
@@ -130,7 +130,7 @@ export default function AuditLogDetailPage() {
           <Button
             variant="outline"
             size="icon"
-            className="rounded-full border-slate-200 text-slate-650 hover:bg-slate-50/50 dark:border-slate-800 dark:text-slate-400 dark:hover:bg-slate-900 h-10 w-10 flex-shrink-0 cursor-pointer shadow-sm bg-white dark:bg-slate-950"
+            className="rounded-full border-slate-200 text-slate-650 hover:bg-slate-50/50 dark:border-slate-800 dark:text-slate-400 dark:hover:bg-slate-900 h-10 w-10 shrink-0 cursor-pointer shadow-sm bg-white dark:bg-slate-950"
             onClick={() => router.push("/admin/audit-logs")}
           >
             <ArrowLeft className="h-5 w-5" />
@@ -157,7 +157,7 @@ export default function AuditLogDetailPage() {
         <CardContent className="pt-6 space-y-6">
           {/* Status / Callout Box */}
           <div className="bg-orange-50/50 dark:bg-orange-950/10 border border-orange-500/20 rounded-xl p-4 flex items-start gap-3">
-            <ShieldAlertIcon className="h-5 w-5 text-orange-500 flex-shrink-0 mt-0.5" />
+            <ShieldAlertIcon className="h-5 w-5 text-orange-500 shrink-0 mt-0.5" />
             <div>
               <h4 className="text-sm font-bold text-orange-800 dark:text-orange-400">Aktivitas Audit Terekam</h4>
               <p className="text-xs text-orange-600 dark:text-orange-500 mt-0.5 leading-relaxed">
@@ -256,7 +256,7 @@ export default function AuditLogDetailPage() {
                   <CardTitle className="text-base font-bold text-slate-900 dark:text-white">Detail Payload JSON</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <pre className="max-h-[14rem] overflow-auto rounded-xl border border-slate-200 bg-slate-950 p-4 font-mono text-xs leading-relaxed text-slate-100 dark:border-slate-800 whitespace-pre-wrap break-all">
+                  <pre className="max-h-56 overflow-auto rounded-xl border border-slate-200 bg-slate-950 p-4 font-mono text-xs leading-relaxed text-slate-100 dark:border-slate-800 whitespace-pre-wrap break-all">
                     {prettyDetails(log.details)}
                   </pre>
                 </CardContent>

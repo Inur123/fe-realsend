@@ -1,7 +1,22 @@
 import type { Metadata } from 'next';
+import { Inter, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
 import { Toaster } from '@/components/ui/sonner';
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
+});
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-plus-jakarta',
+  weight: ['400', '500', '600', '700', '800'],
+});
 
 export const metadata: Metadata = {
   title: 'RealSend — Layanan SMTP Profesional Indonesia | Authentic SMTP Delivery',
@@ -44,14 +59,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id" className="light scroll-smooth" data-scroll-behavior="smooth" suppressHydrationWarning>
+    <html lang="id" className={`light scroll-smooth ${inter.variable} ${plusJakartaSans.variable}`} suppressHydrationWarning>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/png" href="/images/logo-realsend.png" />
       </head>
-      <body className="antialiased">
+      <body className={`antialiased ${inter.className}`}>
         <AuthProvider>
           {children}
           <Toaster />
@@ -60,3 +73,4 @@ export default function RootLayout({
     </html>
   );
 }
+

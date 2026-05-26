@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import { SignupForm } from "@/components/signup-form"
 
 export default function RegisterPage() {
@@ -15,9 +16,12 @@ export default function RegisterPage() {
         {/* Logo floating above card */}
         <div className="flex justify-center mb-2">
           <Link href="/">
-            <img
+            <Image
               src="/images/logo-text-realsend.png"
               alt="RealSend Logo"
+              width={160}
+              height={40}
+              priority
               className="h-10 w-auto object-contain hover:opacity-90 transition-opacity"
             />
           </Link>

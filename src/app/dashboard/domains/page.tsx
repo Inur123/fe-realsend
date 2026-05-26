@@ -29,13 +29,13 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import {
   Globe,
   Plus,
-  Loader2,
   Clock,
   Search,
   RotateCcw,
   Settings,
   CheckCircle2,
 } from "lucide-react";
+import { DomainsSkeleton } from "./skeleton";
 import { toast } from "sonner";
 import { formatDate } from "@/lib/utils";
 
@@ -47,6 +47,8 @@ export default function DomainsPage() {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [page, setPage] = useState(1);
+  const perPage = 10;
 
   const fetchDomains = useCallback(async () => {
     setLoading(true);
@@ -67,6 +69,7 @@ export default function DomainsPage() {
     return () => clearTimeout(timer);
   }, [fetchDomains]);
 
+  // Reset page to 1 when filter changes
   const handleAddDomain = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newDomain) return;
@@ -94,6 +97,7 @@ export default function DomainsPage() {
   const handleClearFilters = () => {
     setSearch("");
     setStatusFilter("all");
+    setPage(1);
   };
 
   const filteredDomains = domains.filter((domain) => {
@@ -108,6 +112,37 @@ export default function DomainsPage() {
 
     return matchSearch && matchStatus;
   });
+
+  const totalPages = Math.ceil(filteredDomains.length / perPage) || 1;
+  const paginatedDomains = filteredDomains.slice((page - 1) * perPage, page * perPage);
+
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+      if (page > 3) {
+        pages.push("...");
+      }
+      const start = Math.max(2, page - 1);
+      const end = Math.min(totalPages - 1, page + 1);
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+      if (page < totalPages - 2) {
+        pages.push("...");
+      }
+      pages.push(totalPages);
+    }
+    return pages;
+  };
+
+  if (loading) {
+    return <DomainsSkeleton />;
+  }
 
   return (
     <div className="space-y-6">
@@ -168,13 +203,19 @@ export default function DomainsPage() {
                 type="text"
                 placeholder="Cari domain..."
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1);
+                }}
                 className="pl-9 pr-8 bg-white dark:bg-slate-900 border-slate-200 h-10 w-full"
               />
               {search && (
                 <button
                   type="button"
-                  onClick={() => setSearch("")}
+                  onClick={() => {
+                    setSearch("");
+                    setPage(1);
+                  }}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
                 >
                   ✕
@@ -186,7 +227,10 @@ export default function DomainsPage() {
           <div className="space-y-1.5 flex-1 min-w-[150px]">
             <Label htmlFor="status-filter" className="text-xs font-bold text-slate-500 tracking-wide">Status</Label>
             <div>
-              <Select value={statusFilter} onValueChange={(val) => setStatusFilter(val || "all")}>
+              <Select value={statusFilter} onValueChange={(val) => {
+                setStatusFilter(val || "all");
+                setPage(1);
+              }}>
                 <SelectTrigger id="status-filter" className="w-full h-10! bg-white dark:bg-slate-900 border-slate-200 rounded-lg">
                   <SelectValue placeholder="Semua Status" />
                 </SelectTrigger>
@@ -214,11 +258,7 @@ export default function DomainsPage() {
         </div>
       )}
 
-      {loading ? (
-        <div className="flex h-[40vh] items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
-        </div>
-      ) : domains.length === 0 ? (
+      {domains.length === 0 ? (
         <Card className="border-dashed border-slate-300 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 p-12 text-center">
           <Globe className="h-12 w-12 mx-auto text-slate-300 mb-4" />
           <h3 className="text-lg font-bold text-slate-700 dark:text-slate-300">Belum Ada Domain</h3>
@@ -242,63 +282,118 @@ export default function DomainsPage() {
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader className="bg-slate-50/50 dark:bg-slate-900/30">
-                  <TableRow>
-                    <TableHead className="font-semibold text-slate-500 dark:text-slate-400 pl-6 py-4 w-16">No.</TableHead>
-                    <TableHead className="font-semibold text-slate-500 dark:text-slate-400 py-4">Nama Domain</TableHead>
-                    <TableHead className="font-semibold text-slate-500 dark:text-slate-400 py-4">Status</TableHead>
-                    <TableHead className="font-semibold text-slate-500 dark:text-slate-400 py-4">Tanggal Ditambahkan</TableHead>
-                    <TableHead className="font-semibold text-slate-500 dark:text-slate-400 py-4 text-right pr-6">Aksi</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredDomains.map((domain, idx) => (
-                    <TableRow key={domain.id} className="hover:bg-slate-50/40 dark:hover:bg-slate-900/10 border-b border-slate-100 dark:border-slate-900">
-                      <TableCell className="pl-6 py-4 font-mono text-xs text-slate-400">
-                        {idx + 1}
-                      </TableCell>
-                      <TableCell className="py-4 font-bold text-slate-800 dark:text-slate-200">
-                        <div className="flex items-center gap-2">
-                          <Globe className="h-4 w-4 text-slate-400" />
-                          <span>{domain.domain_name}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-4">
-                        {domain.status === "verified" ? (
-                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/20 px-2 py-0.5 rounded-full border border-emerald-250 uppercase tracking-wider">
-                            <CheckCircle2 className="h-3 w-3" />
-                            Verified
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 px-2 py-0.5 rounded-full border border-amber-250 uppercase tracking-wider">
-                            <Clock className="h-3 w-3 animate-pulse" />
-                            Pending DNS
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell className="py-4 text-xs text-slate-400">
-                        {formatDate(domain.created_at)}
-                      </TableCell>
-                      <TableCell className="py-4 text-right pr-6">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            router.push(`/dashboard/domains/${domain.id}`);
-                          }}
-                          className="h-8 text-xs font-semibold border-slate-200 text-slate-650 hover:text-orange-500 hover:border-orange-200"
-                        >
-                          <Settings className="h-3.5 w-3.5 mr-1" />
-                          Konfigurasi DNS
-                        </Button>
-                      </TableCell>
+            {filteredDomains.length > 0 ? (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader className="bg-slate-50/50 dark:bg-slate-900/30">
+                    <TableRow>
+                      <TableHead className="font-semibold text-slate-500 dark:text-slate-400 pl-6 py-4 w-16">No.</TableHead>
+                      <TableHead className="font-semibold text-slate-500 dark:text-slate-400 py-4">Nama Domain</TableHead>
+                      <TableHead className="font-semibold text-slate-500 dark:text-slate-400 py-4">Status</TableHead>
+                      <TableHead className="font-semibold text-slate-500 dark:text-slate-400 py-4">Tanggal Ditambahkan</TableHead>
+                      <TableHead className="font-semibold text-slate-500 dark:text-slate-400 py-4 text-right pr-6">Aksi</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                  </TableHeader>
+                  <TableBody>
+                    {paginatedDomains.map((domain, idx) => (
+                      <TableRow key={domain.id} className="hover:bg-slate-50/40 dark:hover:bg-slate-900/10 border-b border-slate-100 dark:border-slate-900">
+                        <TableCell className="pl-6 py-4 font-mono text-xs text-slate-400">
+                          {idx + 1 + (page - 1) * perPage}
+                        </TableCell>
+                        <TableCell className="py-4 font-bold text-slate-800 dark:text-slate-200">
+                          <div className="flex items-center gap-2">
+                            <Globe className="h-4 w-4 text-slate-400" />
+                            <span>{domain.domain_name}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-4">
+                          {domain.status === "verified" ? (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/20 px-2 py-0.5 rounded-full border border-emerald-250 uppercase tracking-wider">
+                              <CheckCircle2 className="h-3 w-3" />
+                              Verified
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 px-2 py-0.5 rounded-full border border-amber-250 uppercase tracking-wider">
+                              <Clock className="h-3 w-3 animate-pulse" />
+                              Pending DNS
+                            </span>
+                          )}
+                        </TableCell>
+                        <TableCell className="py-4 text-xs text-slate-400">
+                          {formatDate(domain.created_at)}
+                        </TableCell>
+                        <TableCell className="py-4 text-right pr-6">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              router.push(`/dashboard/domains/${domain.id}`);
+                            }}
+                            className="h-8 text-xs font-semibold border-slate-200 text-slate-650 hover:text-orange-500 hover:border-orange-200"
+                          >
+                            <Settings className="h-3.5 w-3.5 mr-1" />
+                            Konfigurasi DNS
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            ) : (
+              <div className="text-center p-8 text-slate-400 text-sm">
+                Tidak ada domain ditemukan.
+              </div>
+            )}
+
+            {totalPages > 1 && filteredDomains.length > 0 && (
+              <div className="flex justify-between items-center px-6 py-4 border-t border-slate-100 dark:border-slate-900 bg-slate-50/50 dark:bg-slate-950/20">
+                <span className="text-xs text-slate-400 font-semibold">
+                  Halaman {page} dari {totalPages}
+                </span>
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={page <= 1}
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    className="h-8"
+                  >
+                    Sebelumnya
+                  </Button>
+                  {getPageNumbers().map((p, index) => {
+                    if (p === "...") {
+                      return (
+                        <span key={`dots-${index}`} className="px-2 py-1 text-slate-400 text-sm select-none">
+                          ...
+                        </span>
+                      );
+                    }
+                    const isCurrent = p === page;
+                    return (
+                      <Button
+                        key={p}
+                        variant={isCurrent ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setPage(Number(p))}
+                        className={isCurrent ? "bg-orange-500! hover:bg-orange-600! text-white! border-orange-500! font-bold h-8 w-8 p-0" : "h-8 w-8 p-0"}
+                      >
+                        {p}
+                      </Button>
+                    );
+                  })}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={page >= totalPages}
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    className="h-8"
+                  >
+                    Selanjutnya
+                  </Button>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}

@@ -22,6 +22,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { usePathname } from "next/navigation"
 import {
   ChevronsUpDownIcon,
   BadgeCheckIcon,
@@ -29,6 +30,7 @@ import {
   LogOutIcon,
   UserIcon,
   ShieldCheckIcon,
+  MailIcon,
 } from "lucide-react"
 
 export function NavUser({
@@ -45,6 +47,8 @@ export function NavUser({
   logout: () => void
 }) {
   const { isMobile, setOpenMobile } = useSidebar()
+  const pathname = usePathname()
+  const isInAdmin = pathname?.startsWith("/admin") || false
   
   const handleLinkClick = () => {
     if (isMobile) {
@@ -127,11 +131,20 @@ export function NavUser({
               {isAdmin && (
                 <DropdownMenuItem
                   className="focus:bg-slate-50 dark:focus:bg-slate-900 rounded-lg py-2 cursor-pointer font-bold text-orange-600 focus:text-orange-700 dark:text-orange-400"
-                  render={<Link href="/admin" />}
+                  render={<Link href={isInAdmin ? "/dashboard" : "/admin"} />}
                   onClick={handleLinkClick}
                 >
-                  <ShieldCheckIcon className="mr-2 h-4 w-4 text-orange-500" />
-                  Admin Console
+                  {isInAdmin ? (
+                    <>
+                      <MailIcon className="mr-2 h-4 w-4 text-orange-500" />
+                      RealSend SMTP
+                    </>
+                  ) : (
+                    <>
+                      <ShieldCheckIcon className="mr-2 h-4 w-4 text-orange-500" />
+                      Admin Console
+                    </>
+                  )}
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem

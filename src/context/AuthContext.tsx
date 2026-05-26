@@ -59,19 +59,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (storedToken && storedUser) {
         setToken(storedToken);
-        setUser(JSON.parse(storedUser));
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
 
-        try {
-          // Fetch fresh user data from server to verify token
-          const freshUser = await api.auth.me();
-          setUser(freshUser);
-          localStorage.setItem("realsend_user", JSON.stringify(freshUser));
-        } catch (err) {
-          if (!(err instanceof Error) || !(err as Error & { isNetworkError?: boolean }).isNetworkError) {
-            localStorage.removeItem("realsend_token");
-            localStorage.removeItem("realsend_user");
-            setToken(null);
-            setUser(null);
+        // Only re-fetch from server if cached data is older than 60 seconds
+        const lastFetch = localStorage.getItem("realsend_auth_ts");
+        const age = lastFetch ? Date.now() - parseInt(lastFetch, 10) : Infinity;
+        if (age > 60_000) {
+          try {
+            const freshUser = await api.auth.me();
+            setUser(freshUser);
+            localStorage.setItem("realsend_user", JSON.stringify(freshUser));
+            localStorage.setItem("realsend_auth_ts", String(Date.now()));
+          } catch (err) {
+            if (!(err instanceof Error) || !(err as Error & { isNetworkError?: boolean }).isNetworkError) {
+              localStorage.removeItem("realsend_token");
+              localStorage.removeItem("realsend_user");
+              localStorage.removeItem("realsend_auth_ts");
+              setToken(null);
+              setUser(null);
+            }
           }
         }
       }
@@ -88,6 +95,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(res.user);
       localStorage.setItem("realsend_token", res.token);
       localStorage.setItem("realsend_user", JSON.stringify(res.user));
+      localStorage.setItem("realsend_auth_ts", String(Date.now()));
       toast.success("Login berhasil!", { description: `Selamat datang kembali, ${res.user.name || res.user.full_name || 'User'}.` });
       router.push("/dashboard");
     } catch (error) {
@@ -107,6 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(res.user);
       localStorage.setItem("realsend_token", res.token);
       localStorage.setItem("realsend_user", JSON.stringify(res.user));
+      localStorage.setItem("realsend_auth_ts", String(Date.now()));
       toast.success("Pendaftaran berhasil!", { description: `Akun Anda telah dibuat.` });
       router.push("/dashboard");
     } catch (error) {
@@ -121,6 +130,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = () => {
     localStorage.removeItem("realsend_token");
     localStorage.removeItem("realsend_user");
+    localStorage.removeItem("realsend_auth_ts");
     setToken(null);
     setUser(null);
     toast.info("Anda telah logout.");

@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Lock, KeyRound, RefreshCw, ShieldCheck } from "lucide-react";
+import { SettingsSecuritySkeleton } from "./skeleton";
 
 export default function SettingsSecurityPage() {
   const { user } = useAuth();
@@ -17,6 +18,10 @@ export default function SettingsSecurityPage() {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  if (!user) {
+    return <SettingsSecuritySkeleton />;
+  }
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Skeleton } from "@/components/ui/skeleton";
 import { 
   SearchIcon, 
   UserXIcon, 
@@ -35,6 +34,7 @@ import {
 import { toast } from "sonner";
 import { useConfirm } from "@/hooks/use-confirm";
 import { formatDate, formatDateTime } from "@/lib/utils";
+import { AdminUsersSkeleton } from "./skeleton";
 
 interface Override {
   id: string;
@@ -366,6 +366,10 @@ export default function UserManagementPage() {
     return ["custom_smtp", "open_tracking", "click_tracking", "webhooks"].includes(key);
   };
 
+  if (loading) {
+    return <AdminUsersSkeleton />;
+  }
+
   return (
     <div className="space-y-8">
       {/* Title Header */}
@@ -488,13 +492,7 @@ export default function UserManagementPage() {
           </div>
         </CardHeader>
         <CardContent className="p-0">
-          {loading ? (
-            <div className="space-y-2 p-6">
-              {[...Array(5)].map((_, idx) => (
-                <Skeleton key={idx} className="h-12 w-full rounded-md" />
-              ))}
-            </div>
-          ) : filteredUsers.length > 0 ? (
+          {filteredUsers.length > 0 ? (
             <div className="overflow-x-auto">
               <Table>
                  <TableHeader>
@@ -655,7 +653,7 @@ export default function UserManagementPage() {
           )}
 
           {/* Pagination Controls */}
-          {totalPages > 1 && (
+          {totalPages > 1 && filteredUsers.length > 0 && (
             <div className="flex justify-between items-center px-6 py-4 border-t border-slate-100 dark:border-slate-900 bg-slate-50/50 dark:bg-slate-950/20">
               <span className="text-xs text-slate-400 font-semibold">
                 Halaman {page} dari {totalPages}

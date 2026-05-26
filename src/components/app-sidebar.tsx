@@ -64,7 +64,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const deliveryItems = [
     { title: "Dashboard Overview", url: "/dashboard", icon: LayoutDashboard },
     { title: "Domain Sending", url: "/dashboard/domains", icon: Globe },
-    { title: "Email Logs", url: "/dashboard/logs", icon: FileText },
+    { title: "Email Logs", url: "/dashboard/email-logs", icon: FileText },
   ]
 
   const developerItems = [

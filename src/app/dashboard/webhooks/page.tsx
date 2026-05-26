@@ -25,7 +25,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Webhook as WebhookIcon, Plus, Loader2, Eye } from "lucide-react";
+import { Webhook as WebhookIcon, Plus, Eye } from "lucide-react";
+import { WebhooksSkeleton } from "./skeleton";
 import { toast } from "sonner";
 import { formatDate } from "@/lib/utils";
 
@@ -93,6 +94,10 @@ export default function WebhooksPage() {
       toast.error("Gagal membuat webhook", { description: err.message });
     }
   };
+
+  if (loading) {
+    return <WebhooksSkeleton />;
+  }
 
   return (
     <div className="space-y-6">
@@ -168,11 +173,7 @@ export default function WebhooksPage() {
         </Dialog>
       </div>
 
-      {loading ? (
-        <div className="flex h-[40vh] items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
-        </div>
-      ) : webhooks.length === 0 ? (
+      {webhooks.length === 0 ? (
         <Card className="border-dashed border-slate-300 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 p-12 text-center">
           <WebhookIcon className="h-12 w-12 mx-auto text-slate-300 mb-4" />
           <h3 className="text-lg font-bold text-slate-700 dark:text-slate-300">Belum Ada Webhook</h3>

@@ -22,12 +22,13 @@ import {
   Calendar, 
   FileText, 
   Download, 
-  Loader2, 
+  Loader2,
   ArrowUpRight,
   ShieldCheck,
   CheckCircle2,
   X
 } from "lucide-react";
+import { BillingSkeleton } from "./skeleton";
 import { formatDate } from "@/lib/utils";
 
 interface Plan {
@@ -143,11 +144,7 @@ export default function BillingPage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex h-[65vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
-      </div>
-    );
+    return <BillingSkeleton />;
   }
 
   // Get active plan config

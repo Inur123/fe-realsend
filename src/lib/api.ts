@@ -163,6 +163,7 @@ export const api = {
       apiFetch<any>("/api-keys", {
         method: "POST",
         body: JSON.stringify({ name }),
+        includeMeta: true,
       }),
     revoke: (id: string) =>
       apiFetch<any>(`/api-keys/${id}`, {
@@ -190,7 +191,6 @@ export const api = {
       }),
   },
 
-  // Email Logs
   logs: {
     list: (params: {
       status?: string;
@@ -208,12 +208,13 @@ export const api = {
         }
       });
       const queryString = query.toString();
-      return apiFetch<{ data: any[]; meta: any }>(`/logs?${queryString}`, { includeMeta: true })
+      return apiFetch<{ data: any[]; meta: any }>(`/email-logs?${queryString}`, { includeMeta: true })
         .then((res) => ({
           logs: res.data || [],
           total: res.meta?.total || 0,
         }));
     },
+    get: (id: string) => apiFetch<any>(`/email-logs/${id}`),
   },
 
   // Analytics

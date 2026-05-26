@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { User, Mail, Building, ShieldCheck, Save, RefreshCw, UserCheck } from "lucide-react";
+import { SettingsProfileSkeleton } from "./skeleton";
 
 export default function SettingsProfilePage() {
   const { user, refreshUser } = useAuth();
@@ -28,6 +29,10 @@ export default function SettingsProfilePage() {
       return () => clearTimeout(timer);
     }
   }, [user]);
+
+  if (!user) {
+    return <SettingsProfileSkeleton />;
+  }
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();

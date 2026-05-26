@@ -17,6 +17,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import Image from "next/image"
 import { ChevronsUpDownIcon } from "lucide-react"
 
 export interface TeamItem {
@@ -58,22 +59,31 @@ export function TeamSwitcher({
               <>
                 {/* Expanded: show full Logo with Text (separated for custom sizing) */}
                 <div className="flex items-center gap-2.5 flex-1 group-data-[collapsible=icon]:hidden min-w-0 px-0.5">
-                  <img
+                  <Image
                     src="/images/logo-realsend.png"
                     alt="RealSend Logo"
+                    width={32}
+                    height={32}
+                    priority
                     className="h-8 w-auto object-contain shrink-0"
                   />
-                  <img
+                  <Image
                     src="/images/text-realsend.png"
                     alt="RealSend Text"
+                    width={100}
+                    height={24}
+                    priority
                     className="h-6 w-auto object-contain dark:invert shrink-0"
                   />
                 </div>
                 {/* Collapsed: show only Icon */}
                 <div className="hidden group-data-[collapsible=icon]:flex size-9 items-center justify-center rounded-lg bg-linear-to-tr from-orange-500 to-amber-500 shadow-md shrink-0">
-                  <img
+                  <Image
                     src="/images/logo-realsend.png"
                     alt="RealSend Icon"
+                    width={26}
+                    height={26}
+                    priority
                     className="size-6.5 object-contain"
                   />
                 </div>
@@ -130,9 +140,11 @@ export function TeamSwitcher({
                     >
                       {team.url === "/dashboard" ? (
                         <div className="flex size-7 items-center justify-center rounded-md bg-linear-to-tr from-orange-500 to-amber-500 shadow-sm shrink-0">
-                          <img
+                          <Image
                             src="/images/logo-realsend.png"
                             alt="RealSend Logo"
+                            width={18}
+                            height={18}
                             className="size-4.5 object-contain"
                           />
                         </div>

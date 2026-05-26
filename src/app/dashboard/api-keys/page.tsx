@@ -25,7 +25,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Key, Plus, Loader2, Copy, Check, AlertCircle, ShieldCheck, Eye } from "lucide-react";
+import { Key, Plus, Copy, Check, AlertCircle, ShieldCheck, Eye } from "lucide-react";
+import { ApiKeysSkeleton } from "./skeleton";
 import { toast } from "sonner";
 import { formatDate, formatDateTime } from "@/lib/utils";
 
@@ -64,8 +65,14 @@ export default function ApiKeysPage() {
 
     try {
       const res = await api.apiKeys.create(newKeyName);
-      const secret = res.raw_key || res.key || res.api_key;
+      // Backend returns: { success: true, data: { token: "rs_live_...", metadata: {...} } }
+      // With includeMeta: true, apiFetch returns the full response body.
+      const secret = res?.data?.token;
       if (secret) {
+        const keyId = res?.data?.metadata?.id;
+        if (keyId && typeof window !== "undefined") {
+          localStorage.setItem(`realsend_api_key_token:${keyId}`, secret);
+        }
         setCreatedKey(secret);
         setIsSecretOpen(true);
       } else {
@@ -86,6 +93,10 @@ export default function ApiKeysPage() {
     toast.success("API Key disalin!");
     setTimeout(() => setCopied(false), 2000);
   };
+
+  if (loading) {
+    return <ApiKeysSkeleton />;
+  }
 
   return (
     <div className="space-y-6">
@@ -189,11 +200,7 @@ export default function ApiKeysPage() {
         </DialogContent>
       </Dialog>
 
-      {loading ? (
-        <div className="flex h-[40vh] items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
-        </div>
-      ) : keys.length === 0 ? (
+      {keys.length === 0 ? (
         <Card className="border-dashed border-slate-300 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 p-12 text-center">
           <Key className="h-12 w-12 mx-auto text-slate-300 mb-4" />
           <h3 className="text-lg font-bold text-slate-700 dark:text-slate-300">Belum Ada API Key</h3>
@@ -253,11 +260,11 @@ export default function ApiKeysPage() {
                           onClick={() => {
                             router.push(`/dashboard/api-keys/${k.id}`);
                           }}
-                          variant="outline"
-                          className="h-9 px-3 border-slate-200 dark:border-slate-800 rounded-lg"
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-slate-400 hover:text-slate-700"
                         >
-                          <Eye className="h-4 w-4 mr-2" />
-                          Detail
+                          <Eye className="h-4 w-4" />
                         </Button>
                       </TableCell>
                     </TableRow>

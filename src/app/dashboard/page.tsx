@@ -14,10 +14,10 @@ import {
   Eye,
   MousePointer,
   ArrowRight,
-  Loader2,
   Inbox,
   RefreshCw,
 } from "lucide-react";
+import { DashboardSkeleton } from "./skeleton";
 import { toast } from "sonner";
 
 interface OverviewData {
@@ -43,19 +43,21 @@ export default function DashboardOverview() {
   const loadData = useCallback(async (silent = false) => {
     if (!silent) setLoading(true);
     try {
-      // 1. Fetch Overview counts
-      const overviewRes = await api.analytics.overview(timePeriod);
-      setOverview(overviewRes);
-
-      // 2. Fetch Daily breakdown (last 7 or 30 days)
       const now = new Date();
       const end = now.toISOString();
-      const start = new Date(now.setDate(now.getDate() - (timePeriod === "7d" ? 7 : 30))).toISOString();
-      const dailyRes = await api.analytics.daily(start, end);
-      setDailyStats(dailyRes || []);
+      const start = new Date(
+        new Date().setDate(new Date().getDate() - (timePeriod === "7d" ? 7 : 30))
+      ).toISOString();
 
-      // 3. Fetch Recent logs
-      const logsRes = await api.logs.list({ per_page: 5 });
+      // Fetch all 3 concurrently instead of sequentially (was ~3x slower before)
+      const [overviewRes, dailyRes, logsRes] = await Promise.all([
+        api.analytics.overview(timePeriod),
+        api.analytics.daily(start, end),
+        api.logs.list({ per_page: 5 }),
+      ]);
+
+      setOverview(overviewRes);
+      setDailyStats(dailyRes || []);
       setRecentLogs(logsRes?.logs || []);
     } catch (err: any) {
       toast.error("Gagal memuat data", { description: err.message });
@@ -72,11 +74,7 @@ export default function DashboardOverview() {
   }, [loadData]);
 
   if (loading) {
-    return (
-      <div className="flex h-[60vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   // Calculate rates
@@ -121,11 +119,18 @@ export default function DashboardOverview() {
     const padding = 20;
 
     const maxVal = Math.max(...dailyStats.map((d) => d.sent), 10);
-    const getX = (idx: number) => padding + (idx * (width - padding * 2)) / (dailyStats.length - 1);
+    const getX = (idx: number) =>
+      dailyStats.length > 1
+        ? padding + (idx * (width - padding * 2)) / (dailyStats.length - 1)
+        : width / 2;
     const getY = (val: number) => height - padding - (val * (height - padding * 2)) / maxVal;
 
-    const sentPoints = dailyStats.map((d, i) => `${getX(i).toFixed(1)},${getY(d.sent).toFixed(1)}`).join(" ");
-    const delPoints = dailyStats.map((d, i) => `${getX(i).toFixed(1)},${getY(d.delivered).toFixed(1)}`).join(" ");
+    const sentPoints = dailyStats.length > 1 
+      ? dailyStats.map((d, i) => `${getX(i).toFixed(1)},${getY(d.sent).toFixed(1)}`).join(" ")
+      : `${getX(0).toFixed(1)},${getY(dailyStats[0].sent).toFixed(1)}`;
+    const delPoints = dailyStats.length > 1
+      ? dailyStats.map((d, i) => `${getX(i).toFixed(1)},${getY(d.delivered).toFixed(1)}`).join(" ")
+      : `${getX(0).toFixed(1)},${getY(dailyStats[0].delivered).toFixed(1)}`;
 
     return (
       <div className="w-full h-64 border border-slate-100 dark:border-slate-800 rounded-xl p-4 bg-white/50 dark:bg-slate-900/50 flex flex-col justify-between">
@@ -374,7 +379,7 @@ export default function DashboardOverview() {
               <CardTitle className="text-lg font-bold text-slate-800 dark:text-white">Aktivitas Terkini</CardTitle>
               <CardDescription className="text-xs text-slate-400">Daftar pengiriman email terbaru.</CardDescription>
             </div>
-            <Link href="/dashboard/logs">
+            <Link href="/dashboard/email-logs">
               <Button variant="ghost" size="sm" className="text-xs font-bold text-orange-500 hover:text-orange-600 hover:bg-orange-50 gap-1 p-1">
                 Semua
                 <ArrowRight className="h-3 w-3" />
