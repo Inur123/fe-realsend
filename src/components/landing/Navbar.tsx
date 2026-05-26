@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Zap } from 'lucide-react';
 
@@ -13,6 +14,7 @@ const navLinks = [
 ];
 
 export default function Navbar() {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -112,7 +114,7 @@ export default function Navbar() {
         {/* CTA buttons */}
         <div style={{ alignItems: 'center', gap: '0.75rem' }} className="hidden md:flex">
           <button
-            onClick={() => handleScroll('#')}
+            onClick={() => router.push('/login')}
             style={{
               padding: '0.5rem 1.25rem',
               borderRadius: '0.625rem',
@@ -129,7 +131,7 @@ export default function Navbar() {
           >
             Masuk
           </button>
-          <button onClick={() => handleScroll('#pricing')} className="rs-btn-primary" style={{ padding: '0.5rem 1.25rem', fontSize: '0.875rem', border: 'none', cursor: 'pointer' }}>
+          <button onClick={() => router.push('/register')} className="rs-btn-primary" style={{ padding: '0.5rem 1.25rem', fontSize: '0.875rem', border: 'none', cursor: 'pointer' }}>
             <Zap size={15} />
             Mulai Gratis
           </button>
@@ -198,7 +200,7 @@ export default function Navbar() {
               ))}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid rgba(15, 23, 42, 0.08)' }}>
                 <button 
-                  onClick={() => { setOpen(false); handleScroll('#'); }} 
+                  onClick={() => { setOpen(false); router.push('/login'); }} 
                   style={{ 
                     padding: '0.75rem 1rem', 
                     textAlign: 'center', 
@@ -213,7 +215,7 @@ export default function Navbar() {
                   Masuk
                 </button>
                 <button 
-                  onClick={() => { setOpen(false); handleScroll('#pricing'); }} 
+                  onClick={() => { setOpen(false); router.push('/register'); }} 
                   className="rs-btn-primary" 
                   style={{ fontSize: '0.875rem', border: 'none', cursor: 'pointer' }}
                 >

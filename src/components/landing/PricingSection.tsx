@@ -1,40 +1,90 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, Zap, Star, Building2, Sparkles } from 'lucide-react';
+import { Check, Zap, Star, Building2, Sparkles, AlertCircle, X } from 'lucide-react';
+import { api } from '@/lib/api';
 
-const plans = [
-  {
-    id: 'free', name: 'Free', icon: Zap,
-    price: { m: 0, y: 0 }, emails: '1.000',
-    desc: 'Untuk eksperimen dan project kecil',
-    features: ['1.000 email/bulan','10 email/menit','1 domain terverifikasi','2 API key','Dashboard dasar','Log 7 hari','Support komunitas'],
-    excluded: ['Dedicated IP','Webhook events','Email tracking','Priority support'],
-    cta: 'Mulai Gratis', featured: false, badge: null as string|null,
-  },
-  {
-    id: 'starter', name: 'Starter', icon: Star,
-    price: { m: 79000, y: 65000 }, emails: '50.000',
-    desc: 'Untuk startup dan aplikasi berkembang',
-    features: ['50.000 email/bulan','100 email/menit','5 domain terverifikasi','10 API key','Dashboard lengkap','Log 30 hari','Webhook events','Email tracking','Support email'],
-    excluded: ['Dedicated IP','Priority support'],
-    cta: 'Coba 14 Hari Gratis', featured: true, badge: 'Paling Populer' as string|null,
-  },
-  {
-    id: 'pro', name: 'Pro', icon: Building2,
-    price: { m: 249000, y: 199000 }, emails: '200.000',
-    desc: 'Untuk bisnis dengan kebutuhan tinggi',
-    features: ['200.000 email/bulan','500 email/menit','20 domain terverifikasi','API key unlimited','Dashboard + analytics','Log 90 hari','Webhook events','Open & click tracking','Dedicated IP (1 IP)','IP warming otomatis','Priority support'],
-    excluded: [] as string[],
-    cta: 'Mulai Pro', featured: false, badge: 'Best Value' as string|null,
-  },
+interface Plan {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  monthly_email_limit: number;
+  daily_email_limit: number;
+  rate_per_minute: number;
+  max_domains: number;
+  max_api_keys: number;
+  max_webhooks: number;
+  log_retention_days: number;
+  price_monthly_idr: number;
+  price_yearly_idr: number;
+  overage_per_1k_idr: number;
+  is_public: boolean;
+  is_active: boolean;
+  sort_order: number;
+  badge_text: string;
+  badge_color: string;
+  features: string[];
+}
+
+const getPlanIcon = (slug: string) => {
+  switch (slug.toLowerCase()) {
+    case 'free':
+      return Zap;
+    case 'starter':
+      return Star;
+    case 'growth':
+      return Sparkles;
+    case 'pro':
+    default:
+      return Building2;
+  }
+};
+
+const getPlanBasicFeatures = (plan: Plan) => {
+  return [
+    `${plan.monthly_email_limit.toLocaleString('id-ID')} email/bulan`,
+    `${plan.daily_email_limit.toLocaleString('id-ID')} email/hari`,
+    `${plan.max_domains} domain terverifikasi`,
+    `${plan.max_api_keys === -1 ? 'API key unlimited' : `${plan.max_api_keys} API key`}`,
+    `${plan.max_webhooks} webhook`,
+    `Log retention ${plan.log_retention_days} hari`,
+  ];
+};
+
+const PREMIUM_FEATURES = [
+  { key: 'tracking', label: 'Open & click tracking', check: (plan: Plan) => plan.features?.includes("open_tracking") || plan.features?.includes("click_tracking") },
+  { key: 'custom_smtp', label: 'Custom SMTP Port', check: (plan: Plan) => plan.features?.includes("custom_smtp") },
+  { key: 'dedicated_ip', label: 'Dedicated IP (1 IP)', check: (plan: Plan) => plan.slug.toLowerCase() === 'pro' },
 ];
 
-const fmt = (n: number) => n === 0 ? 'Gratis' : `Rp ${(n/1000).toFixed(0)}k`;
+const fmt = (n: number) => n === 0 ? 'Gratis' : `Rp ${(n/1000).toLocaleString('id-ID')}k`;
 
 export default function PricingSection() {
+  const router = useRouter();
   const [yearly, setYearly] = useState(false);
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchPlans() {
+      try {
+        const data = await api.plans.list();
+        // Filter public & active plans, sort by sort_order
+        const filtered = data
+          .filter((p: Plan) => p.is_public && p.is_active)
+          .sort((a: Plan, b: Plan) => a.sort_order - b.sort_order);
+        setPlans(filtered);
+      } catch {
+        setPlans([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchPlans();
+  }, []);
 
   return (
     <section id="pricing" className="rs-section">
@@ -85,127 +135,172 @@ export default function PricingSection() {
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-          {plans.map((plan, i) => (
-            <motion.div
-              key={plan.id}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              style={{
-                position: 'relative',
-                display: 'flex',
-                flexDirection: 'column',
-                borderRadius: '1.25rem',
-                border: `1px solid ${plan.featured ? 'rgba(244,121,32,0.42)' : 'var(--border)'}`,
-                background: plan.featured
-                  ? 'linear-gradient(155deg, #FFFFFF 0%, #FFF7ED 100%)'
-                  : 'var(--bg-card)',
-                boxShadow: plan.featured ? '0 12px 40px rgba(244,121,32,0.08)' : '0 4px 20px rgba(15, 23, 42, 0.02)',
-                overflow: 'visible',
-              }}
-            >
-              {/* Badge */}
-              {plan.badge && (
-                <div style={{ position: 'absolute', top: '-0.9rem', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>
-                  <span style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.25rem',
-                    fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase',
-                    padding: '0.3rem 0.875rem', borderRadius: 9999,
-                    ...(plan.featured
-                      ? { background: 'rgba(244,121,32,0.18)', border: '1px solid rgba(244,121,32,0.42)', color: '#F5913A' }
-                      : { background: 'rgba(74,222,128,0.12)', border: '1px solid rgba(74,222,128,0.32)', color: '#4ADE80' }
-                    ),
-                  }}>
-                    <Sparkles size={10} className="fill-current" />
-                    {plan.badge}
-                  </span>
-                </div>
-              )}
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-orange-500" />
+          </div>
+        ) : plans.length === 0 ? (
+          <div className="text-center py-10">
+            <AlertCircle className="mx-auto h-12 w-12 text-slate-400" />
+            <h3 className="mt-2 text-sm font-semibold text-slate-900">Belum ada paket</h3>
+            <p className="mt-1 text-sm text-slate-500">Tidak ada paket subscription publik yang tersedia saat ini.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
+            {plans.map((plan, i) => {
+              const icon = getPlanIcon(plan.slug);
+              const IconComponent = icon;
+              // Growth defaults to Paling Populer, Pro to Best Value if not configured in db
+              const badge = plan.badge_text || (plan.slug === 'growth' ? 'Paling Populer' : plan.slug === 'pro' ? 'Best Value' : null);
+              const featured = badge === 'Paling Populer' || badge === 'Popular' || plan.slug === 'growth';
+              const basicFeatures = getPlanBasicFeatures(plan);
+              
+              // Calculate price based on toggle
+              const monthlyPrice = plan.price_monthly_idr;
+              const yearlyPrice = plan.price_yearly_idr;
+              const displayPrice = yearly ? Math.round(yearlyPrice / 12) : monthlyPrice;
 
-              <div style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.25rem', flex: 1 }}>
-                {/* Plan name */}
-                <div>
-                  <div style={{
-                    width: '2.5rem', height: '2.5rem', borderRadius: '0.75rem', marginBottom: '0.875rem',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid',
-                    background: plan.featured ? 'rgba(244,121,32,0.18)' : 'rgba(15, 23, 42, 0.05)',
-                    borderColor: plan.featured ? 'rgba(244,121,32,0.35)' : 'rgba(15, 23, 42, 0.1)',
-                  }}>
-                    <plan.icon size={18} color={plan.featured ? '#F47920' : 'var(--text-secondary)'} />
-                  </div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>{plan.name}</h3>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '0.25rem 0 0' }}>{plan.desc}</p>
-                </div>
-
-                {/* Price */}
-                <div style={{ borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', padding: '1rem 0' }}>
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={yearly ? 'y' : 'm'}
-                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                      transition={{ duration: 0.15 }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.3rem' }}>
-                        <span style={{ fontSize: '2.25rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-                          {fmt(yearly ? plan.price.y : plan.price.m)}
-                        </span>
-                        {plan.price.m > 0 && <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>/bln</span>}
-                      </div>
-                      {yearly && plan.price.m > 0 && (
-                        <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', margin: '0.25rem 0 0' }}>
-                          Ditagih {fmt(plan.price.y * 12)}/tahun
-                        </p>
-                      )}
-                    </motion.div>
-                  </AnimatePresence>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.75rem' }}>
-                    <div style={{ width: '0.4rem', height: '0.4rem', borderRadius: '50%', background: '#F47920', flexShrink: 0 }} />
-                    <span style={{ fontSize: '0.875rem', fontWeight: 700, color: '#F47920' }}>{plan.emails} email/bulan</span>
-                  </div>
-                </div>
-
-                {/* Features */}
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.625rem', flex: 1 }}>
-                  {plan.features.map((f) => (
-                    <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.625rem', fontSize: '0.8375rem', color: 'var(--text-secondary)' }}>
-                      <Check size={15} color="#4ADE80" style={{ flexShrink: 0, marginTop: '0.1rem' }} />
-                      {f}
-                    </li>
-                  ))}
-                  {plan.excluded.map((f) => (
-                    <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.625rem', fontSize: '0.8375rem', color: 'var(--text-muted)', opacity: 0.5, textDecoration: 'line-through' }}>
-                      <span style={{ flexShrink: 0, marginTop: '0.05rem', width: 15, textAlign: 'center' }}>—</span>
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-
-                {/* CTA */}
-                <button
-                  id={`pricing-${plan.id}`}
-                  className={plan.featured ? "" : "rs-btn-outline"}
+              return (
+                <motion.div
+                  key={plan.id}
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
                   style={{
-                    display: 'block', width: '100%', textAlign: 'center', borderRadius: '0.75rem',
-                    fontSize: '0.875rem', fontWeight: 700, marginTop: '0.5rem',
-                    transition: 'all 0.25s',
-                    cursor: 'pointer',
-                    outline: 'none',
-                    ...(plan.featured
-                      ? { padding: '0.75rem 1.5rem', background: 'linear-gradient(135deg,#F47920,#D4661A)', color: 'white', border: 'none', boxShadow: '0 4px 20px rgba(244,121,32,0.3)' }
-                      : { padding: '0.625rem 1.5rem', background: 'transparent' }
-                    ),
+                    position: 'relative',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    borderRadius: '1.25rem',
+                    border: `1px solid ${featured ? 'rgba(244,121,32,0.42)' : 'var(--border)'}`,
+                    background: featured
+                      ? 'linear-gradient(155deg, #FFFFFF 0%, #FFF7ED 100%)'
+                      : 'var(--bg-card)',
+                    boxShadow: featured ? '0 12px 40px rgba(244,121,32,0.08)' : '0 4px 20px rgba(15, 23, 42, 0.02)',
+                    overflow: 'visible',
                   }}
                 >
-                  {plan.cta}
-                </button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+                  {/* Badge */}
+                  {badge && (
+                    <div style={{ position: 'absolute', top: '-0.9rem', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>
+                      <span style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.25rem',
+                        fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase',
+                        padding: '0.3rem 0.875rem', borderRadius: 9999,
+                        ...(featured
+                          ? { background: 'rgba(244,121,32,0.18)', border: '1px solid rgba(244,121,32,0.42)', color: '#F5913A' }
+                          : { background: 'rgba(74,222,128,0.12)', border: '1px solid rgba(74,222,128,0.32)', color: '#4ADE80' }
+                        ),
+                      }}>
+                        <Sparkles size={10} className="fill-current" />
+                        {badge}
+                      </span>
+                    </div>
+                  )}
+
+                  <div style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.25rem', flex: 1 }}>
+                    {/* Plan name */}
+                    <div>
+                      <div style={{
+                        width: '2.5rem', height: '2.5rem', borderRadius: '0.75rem', marginBottom: '0.875rem',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid',
+                        background: featured ? 'rgba(244,121,32,0.18)' : 'rgba(15, 23, 42, 0.05)',
+                        borderColor: featured ? 'rgba(244,121,32,0.35)' : 'rgba(15, 23, 42, 0.1)',
+                      }}>
+                        <IconComponent size={18} color={featured ? '#F47920' : 'var(--text-secondary)'} />
+                      </div>
+                      <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>{plan.name}</h3>
+                      <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '0.25rem 0 0' }}>{plan.description}</p>
+                    </div>
+
+                    {/* Price */}
+                    <div style={{ borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', padding: '1rem 0' }}>
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={yearly ? 'y' : 'm'}
+                          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                          transition={{ duration: 0.15 }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.3rem' }}>
+                            <span style={{ fontSize: '2.25rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                              {fmt(displayPrice)}
+                            </span>
+                            {displayPrice > 0 && <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>/bln</span>}
+                          </div>
+                          {yearly && displayPrice > 0 && (
+                            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', margin: '0.25rem 0 0' }}>
+                              Ditagih {fmt(yearlyPrice)}/tahun
+                            </p>
+                          )}
+                        </motion.div>
+                      </AnimatePresence>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.75rem' }}>
+                        <div style={{ width: '0.4rem', height: '0.4rem', borderRadius: '50%', background: '#F47920', flexShrink: 0 }} />
+                        <span style={{ fontSize: '0.875rem', fontWeight: 700, color: '#F47920' }}>{plan.monthly_email_limit.toLocaleString('id-ID')} email/bulan</span>
+                      </div>
+                    </div>
+
+                    {/* Features */}
+                    <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.625rem', flex: 1 }}>
+                      {basicFeatures.map((f) => (
+                        <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.625rem', fontSize: '0.8375rem', color: 'var(--text-secondary)' }}>
+                          <Check size={15} color="#4ADE80" style={{ flexShrink: 0, marginTop: '0.1rem' }} />
+                          {f}
+                        </li>
+                      ))}
+                      {PREMIUM_FEATURES.map((feat) => {
+                        const included = feat.check(plan);
+                        return (
+                          <li 
+                            key={feat.key} 
+                            style={{ 
+                              display: 'flex', 
+                              alignItems: 'flex-start', 
+                              gap: '0.625rem', 
+                              fontSize: '0.8375rem', 
+                              color: included ? 'var(--text-secondary)' : 'var(--text-muted)', 
+                              opacity: included ? 1 : 0.45, 
+                              textDecoration: included ? 'none' : 'line-through' 
+                            }}
+                          >
+                            {included ? (
+                              <Check size={15} color="#4ADE80" style={{ flexShrink: 0, marginTop: '0.1rem' }} />
+                            ) : (
+                              <X size={15} color="#EF4444" style={{ flexShrink: 0, marginTop: '0.1rem' }} />
+                            )}
+                            {feat.label}
+                          </li>
+                        );
+                      })}
+                    </ul>
+
+                    {/* CTA */}
+                    <button
+                      id={`pricing-${plan.id}`}
+                      onClick={() => router.push('/register')}
+                      className={featured ? "" : "rs-btn-outline"}
+                      style={{
+                        display: 'block', width: '100%', textAlign: 'center', borderRadius: '0.75rem',
+                        fontSize: '0.875rem', fontWeight: 700, marginTop: '0.5rem',
+                        transition: 'all 0.25s',
+                        cursor: 'pointer',
+                        outline: 'none',
+                        ...(featured
+                          ? { padding: '0.75rem 1.5rem', background: 'linear-gradient(135deg,#F47920,#D4661A)', color: 'white', border: 'none', boxShadow: '0 4px 20px rgba(244,121,32,0.3)' }
+                          : { padding: '0.625rem 1.5rem', background: 'transparent' }
+                        ),
+                      }}
+                    >
+                      {plan.slug === 'free' ? 'Mulai Gratis' : 'Coba Sekarang'}
+                    </button>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
 
         {/* Enterprise row */}
         <div

@@ -1,0 +1,307 @@
+"use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import React, { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { api } from "@/lib/api";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useConfirm } from "@/hooks/use-confirm";
+import { toast } from "sonner";
+import {
+  Globe,
+  Loader2,
+  Clock,
+  Copy,
+  Check,
+  ArrowLeft,
+  Trash2,
+  CheckCircle,
+} from "lucide-react";
+
+export default function DomainDetailPage() {
+  const { id } = useParams() as { id: string };
+  const router = useRouter();
+  const [ConfirmDialog, confirm] = useConfirm();
+
+  const [domain, setDomain] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [verifying, setVerifying] = useState(false);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+
+  const fetchDomainDetails = React.useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
+    try {
+      const data = await api.domains.get(id);
+      setDomain(data.domain);
+    } catch (err: any) {
+      toast.error("Gagal memuat detail domain", { description: err.message });
+      router.push("/dashboard/domains");
+    } finally {
+      setLoading(false);
+    }
+  }, [id, router]);
+
+  useEffect(() => {
+    let active = true;
+    if (id) {
+      const timer = setTimeout(() => {
+        if (active) {
+          fetchDomainDetails();
+        }
+      }, 0);
+      return () => {
+        active = false;
+        clearTimeout(timer);
+      };
+    }
+  }, [id, fetchDomainDetails]);
+
+  const handleVerify = async () => {
+    setVerifying(true);
+    try {
+      const res = await api.domains.verify(id);
+      if (res.status === "verified") {
+        toast.success("Domain terverifikasi!", { description: "Status domain Anda sekarang aktif." });
+      } else {
+        toast.warning("Verifikasi gagal", {
+          description: "Catatan DNS belum terdeteksi. Silakan tunggu beberapa menit dan coba lagi.",
+        });
+      }
+      await fetchDomainDetails(true);
+    } catch (err: any) {
+      toast.error("Gagal melakukan verifikasi", { description: err.message });
+    } finally {
+      setVerifying(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!domain) return;
+    const confirmed = await confirm(
+      "Hapus Domain?",
+      `Apakah Anda yakin ingin menghapus domain ${domain.domain_name}? Semua data integrasi domain ini akan terhapus.`,
+      "destructive",
+      "Hapus"
+    );
+    if (!confirmed) return;
+
+    try {
+      await api.domains.delete(id);
+      toast.success("Domain berhasil dihapus");
+      router.push("/dashboard/domains");
+    } catch (err: any) {
+      toast.error("Gagal menghapus domain", { description: err.message });
+    }
+  };
+
+  const copyToClipboard = (text: string, field: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(field);
+    toast.success("Teks berhasil disalin!");
+    setTimeout(() => setCopiedField(null), 2000);
+  };
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-4 w-32" />
+        </div>
+        <Card className="border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-md rounded-2xl p-6">
+          <div className="space-y-4">
+            <Skeleton className="h-10 w-1/3" />
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-24 w-full" />
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!domain) {
+    return (
+      <div className="text-center p-8 text-slate-500">
+        Domain tidak ditemukan.
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="outline"
+            size="icon"
+            className="rounded-full border-slate-200 text-slate-600 hover:bg-slate-50 dark:border-slate-800 dark:text-slate-400 dark:hover:bg-slate-900 h-10 w-10 shrink-0 cursor-pointer shadow-sm"
+            onClick={() => router.push("/dashboard/domains")}
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+              <Globe className="h-7 w-7 text-orange-500" />
+              {domain.domain_name}
+            </h1>
+            <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm">
+              ID: {domain.id}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 self-start md:self-center">
+          {domain.status !== "verified" ? (
+            <Button
+              onClick={handleVerify}
+              disabled={verifying}
+              className="bg-linear-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-bold h-9 text-xs rounded-lg cursor-pointer shadow-sm"
+            >
+              {verifying ? (
+                <>
+                  <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                  Memeriksa...
+                </>
+              ) : (
+                "Verifikasi DNS"
+              )}
+            </Button>
+          ) : (
+            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/20 px-2.5 py-1 rounded-full border border-emerald-250 uppercase tracking-wider">
+              <CheckCircle className="h-3.5 w-3.5" />
+              Verified
+            </span>
+          )}
+          <Button
+            onClick={handleDelete}
+            variant="outline"
+            size="icon"
+            className="border-slate-200 text-red-500 hover:bg-red-50 hover:text-red-600 dark:border-slate-800 dark:hover:bg-red-950/30 h-9 w-9 rounded-lg cursor-pointer"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+
+      <Card className="border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-md rounded-2xl overflow-hidden">
+        <CardContent className="pt-6 space-y-6">
+          {/* Status Callout */}
+          {domain.status === "verified" ? (
+            <div className="bg-emerald-50/50 dark:bg-emerald-950/10 border border-emerald-500/20 rounded-xl p-4 flex items-start gap-3">
+              <CheckCircle className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
+              <div>
+                <h4 className="text-sm font-bold text-emerald-800 dark:text-emerald-400">Domain Terverifikasi</h4>
+                <p className="text-xs text-emerald-600 dark:text-emerald-500 mt-0.5 leading-relaxed">
+                  Domain Anda telah melewati otorisasi SPF, DKIM, dan DMARC. Anda sekarang dapat menggunakan domain ini untuk mengirim email transaksional.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-amber-50/50 dark:bg-amber-950/10 border border-amber-500/20 rounded-xl p-4 flex items-start gap-3">
+              <Clock className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+              <div>
+                <h4 className="text-sm font-bold text-amber-800 dark:text-amber-400">Verifikasi DNS Tertunda</h4>
+                <p className="text-xs text-amber-600 dark:text-amber-500 mt-0.5 leading-relaxed">
+                  Tambahkan catatan DNS di bawah ini ke penyedia domain Anda (seperti Cloudflare, Niagahoster, dll.) kemudian klik tombol <strong>Verifikasi DNS</strong> di atas untuk memvalidasi otorisasi.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* DNS Records List */}
+          <div className="space-y-6">
+            <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">Konfigurasi Record DNS</h3>
+
+            {/* SPF Record */}
+            <div className="space-y-2 border border-slate-100 dark:border-slate-900 rounded-xl p-4 bg-slate-50/50 dark:bg-slate-900/50">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-bold text-slate-700 dark:text-slate-300">SPF Record (TXT)</span>
+                <span className="text-[10px] text-slate-400 uppercase font-mono">Host: @</span>
+              </div>
+              <div className="flex gap-2 items-center bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg p-2.5">
+                <code className="text-xs font-mono text-slate-800 dark:text-slate-200 break-all flex-1 select-all">
+                  {domain.spf_record || "v=spf1 include:spf.realsend.id ~all"}
+                </code>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => copyToClipboard(domain.spf_record || "v=spf1 include:spf.realsend.id ~all", "spf")}
+                  className="h-8 w-8 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                >
+                  {copiedField === "spf" ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
+                </Button>
+              </div>
+            </div>
+
+            {/* DKIM Record */}
+            <div className="space-y-2 border border-slate-100 dark:border-slate-900 rounded-xl p-4 bg-slate-50/50 dark:bg-slate-900/50">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-bold text-slate-700 dark:text-slate-300">DKIM Record (TXT)</span>
+                <span className="text-[10px] text-slate-400 font-mono">Host: {domain.dkim_selector || "realsend"}._domainkey</span>
+              </div>
+              <div className="flex gap-2 items-start bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg p-2.5">
+                <code className="text-xs font-mono text-slate-800 dark:text-slate-200 break-all flex-1 line-clamp-3 select-all">
+                  {domain.dkim_public_key || "v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA..."}
+                </code>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => copyToClipboard(domain.dkim_public_key, "dkim")}
+                  className="h-8 w-8 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 mt-1"
+                >
+                  {copiedField === "dkim" ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
+                </Button>
+              </div>
+            </div>
+
+            {/* DMARC Record */}
+            <div className="space-y-2 border border-slate-100 dark:border-slate-900 rounded-xl p-4 bg-slate-50/50 dark:bg-slate-900/50">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-bold text-slate-700 dark:text-slate-300">DMARC Record (TXT)</span>
+                <span className="text-[10px] text-slate-400 font-mono">Host: _dmarc</span>
+              </div>
+              <div className="flex gap-2 items-center bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg p-2.5">
+                <code className="text-xs font-mono text-slate-800 dark:text-slate-200 break-all flex-1 select-all">
+                  {domain.dmarc_record || "v=DMARC1; p=none; rua=mailto:dmarc@realsend.id"}
+                </code>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => copyToClipboard(domain.dmarc_record || "v=DMARC1; p=none; rua=mailto:dmarc@realsend.id", "dmarc")}
+                  className="h-8 w-8 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                >
+                  {copiedField === "dmarc" ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
+                </Button>
+              </div>
+            </div>
+
+            {/* Return Path CNAME */}
+            <div className="space-y-2 border border-slate-100 dark:border-slate-900 rounded-xl p-4 bg-slate-50/50 dark:bg-slate-900/50">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-bold text-slate-700 dark:text-slate-300">Return-Path CNAME</span>
+                <span className="text-[10px] text-slate-400 font-mono">Host: pm</span>
+              </div>
+              <div className="flex gap-2 items-center bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg p-2.5">
+                <code className="text-xs font-mono text-slate-800 dark:text-slate-200 break-all flex-1 select-all">
+                  {domain.return_path_cname || "return.realsend.id"}
+                </code>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => copyToClipboard(domain.return_path_cname || "return.realsend.id", "return_path")}
+                  className="h-8 w-8 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                >
+                  {copiedField === "return_path" ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      <ConfirmDialog />
+    </div>
+  );
+}

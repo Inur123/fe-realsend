@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle2, Send, Zap } from 'lucide-react';
 
@@ -27,6 +28,7 @@ const stats = [
 ];
 
 export default function HeroSection() {
+  const router = useRouter();
   const handleScroll = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
@@ -91,7 +93,7 @@ export default function HeroSection() {
             {/* CTA */}
             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
               <button
-                onClick={() => handleScroll('pricing')}
+                onClick={() => router.push('/register')}
                 id="hero-cta-primary"
                 className="rs-btn-primary w-full sm:w-auto"
                 style={{ cursor: 'pointer', border: 'none' }}
