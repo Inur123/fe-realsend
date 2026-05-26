@@ -10,7 +10,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import {
   ArrowLeft,
-  Mail,
   Clock,
   Send,
   CheckCircle2,
@@ -19,9 +18,6 @@ import {
   Eye,
   MousePointer,
   Info,
-  Server,
-  Calendar,
-  User,
 } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
 

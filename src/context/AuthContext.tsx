@@ -127,7 +127,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await api.auth.logout();
+    } catch (err) {
+      // Fallback: ignore API failures during logout so we still clear local session
+      console.warn("API logout call failed, clearing local session anyway:", err);
+    }
     localStorage.removeItem("realsend_token");
     localStorage.removeItem("realsend_user");
     localStorage.removeItem("realsend_auth_ts");

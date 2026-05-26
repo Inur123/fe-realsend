@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import {
   Search,
   Send,
@@ -20,8 +19,6 @@ import {
   Eye,
   MousePointer,
   Clock,
-  ExternalLink,
-  Mail,
   Info,
   RotateCcw,
   Loader2,

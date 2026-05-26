@@ -128,6 +128,10 @@ export const api = {
         method: "PUT",
         body: JSON.stringify(passwordData),
       }),
+    logout: () =>
+      apiFetch<any>("/auth/logout", {
+        method: "POST",
+      }),
   },
 
   // Plans
