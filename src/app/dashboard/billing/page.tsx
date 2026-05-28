@@ -66,6 +66,7 @@ export default function BillingPage() {
   const [domainsCount, setDomainsCount] = useState(0);
   const [apiKeysCount, setApiKeysCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [yearly, setYearly] = useState(true);
 
   // Checkout modal states
   const [selectedPlan, setSelectedPlan] = useState<any | null>(null);
@@ -323,9 +324,33 @@ export default function BillingPage() {
         
         {/* Left Column: Plans Grid */}
         <div className="lg:col-span-2 space-y-6">
-          <div>
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Pilih Paket RealSend</h2>
-            <p className="text-sm text-slate-500 mt-1">Upgrade untuk membuka limit pengiriman harian, tracking statistik open/click, dan webhooks.</p>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white">Pilih Paket RealSend</h2>
+              <p className="text-sm text-slate-500 mt-1">Upgrade untuk membuka limit pengiriman harian, tracking statistik open/click, dan webhooks.</p>
+            </div>
+
+            {/* Toggle */}
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 self-start sm:self-center">
+              <span className={`text-xs font-semibold ${yearly ? "text-slate-400 dark:text-slate-500" : "text-slate-800 dark:text-slate-200"}`}>
+                Bulanan
+              </span>
+              <button
+                type="button"
+                onClick={() => setYearly(!yearly)}
+                className={`relative w-8 h-4.5 rounded-full border-0 cursor-pointer shrink-0 transition-colors duration-300 ${yearly ? "bg-orange-500" : "bg-slate-300 dark:bg-slate-700"}`}
+              >
+                <div
+                  className={`absolute top-0.5 w-3.5 h-3.5 rounded-full bg-white transition-all duration-300 ${yearly ? "left-4" : "left-0.5"}`}
+                />
+              </button>
+              <span className={`text-xs font-semibold flex items-center gap-1.5 ${yearly ? "text-slate-800 dark:text-slate-200" : "text-slate-400 dark:text-slate-500"}`}>
+                Tahunan
+                <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-green-500/10 border border-green-500/20 text-[#4ADE80]">
+                  -20%
+                </span>
+              </span>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -333,6 +358,10 @@ export default function BillingPage() {
               const isCurrent = plan.slug === activePlanSlug;
               const isPopular = plan.slug === "starter" || plan.slug === "growth";
               
+              const monthlyPrice = plan.price_monthly_idr;
+              const yearlyPrice = plan.price_yearly_idr;
+              const displayPrice = yearly ? Math.round(yearlyPrice / 12) : monthlyPrice;
+
               return (
                 <Card 
                   key={plan.id}
@@ -355,12 +384,23 @@ export default function BillingPage() {
                       )}
                     </div>
                     
-                    <div className="mt-4 flex items-baseline gap-1">
-                      <span className="text-2xl font-black text-slate-900 dark:text-white">
-                        {plan.price_monthly_idr === 0 ? "Gratis" : formatIDR(plan.price_monthly_idr)}
-                      </span>
-                      {plan.price_monthly_idr > 0 && (
-                        <span className="text-xs text-slate-400 font-bold">/ bulan</span>
+                    <div className="mt-4">
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-2xl font-black text-slate-900 dark:text-white">
+                          {displayPrice === 0 ? "Gratis" : formatIDR(displayPrice)}
+                        </span>
+                        {displayPrice > 0 && (
+                          <span className="text-xs text-slate-400 font-bold">/ bulan</span>
+                        )}
+                      </div>
+                      {yearly && displayPrice > 0 ? (
+                        <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1 font-semibold">
+                          Ditagih {formatIDR(yearlyPrice)} / tahun
+                        </p>
+                      ) : (
+                        <p className="text-[10px] text-transparent select-none mt-1 font-semibold pointer-events-none">
+                          &nbsp;
+                        </p>
                       )}
                     </div>
                   </CardHeader>
@@ -565,19 +605,23 @@ export default function BillingPage() {
             </div>
           ) : (
             <form onSubmit={handleCheckoutSubmit} className="space-y-4 pt-2">
-              {/* Plan Summary Card */}
-              <div className="bg-slate-50 dark:bg-slate-900/50 p-4 border border-slate-100 rounded-xl space-y-1">
-                <div className="flex justify-between items-center text-xs font-bold text-slate-400 uppercase tracking-wider">
-                  <span>Paket yang dipilih</span>
-                  <span className="text-orange-600 dark:text-orange-400">Bulanan</span>
-                </div>
-                <div className="flex justify-between items-baseline pt-1">
-                  <span className="text-lg font-black text-slate-800 dark:text-white">{selectedPlan?.name} Plan</span>
-                  <span className="text-lg font-black text-slate-900 dark:text-white">
-                    {selectedPlan && formatIDR(selectedPlan.price_monthly_idr)}
-                  </span>
-                </div>
-              </div>
+               {/* Plan Summary Card */}
+               <div className="bg-slate-50 dark:bg-slate-900/50 p-4 border border-slate-100 rounded-xl space-y-1">
+                 <div className="flex justify-between items-center text-xs font-bold text-slate-400 uppercase tracking-wider">
+                   <span>Paket yang dipilih</span>
+                   <span className="text-orange-600 dark:text-orange-400">{yearly ? "Tahunan" : "Bulanan"}</span>
+                 </div>
+                 <div className="flex justify-between items-baseline pt-1">
+                   <span className="text-lg font-black text-slate-800 dark:text-white">{selectedPlan?.name} Plan</span>
+                   <span className="text-lg font-black text-slate-900 dark:text-white">
+                     {selectedPlan && formatIDR(
+                       yearly
+                         ? selectedPlan.price_yearly_idr
+                         : selectedPlan.price_monthly_idr
+                     )}
+                   </span>
+                 </div>
+               </div>
 
               {/* Card Form */}
               <div className="space-y-3">

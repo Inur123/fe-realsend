@@ -36,96 +36,85 @@ export default function StatsAndTestimonials() {
   const inView = useInView(ref, { once: true, margin: '-60px' });
 
   return (
-    <section id="stats" className="rs-section rs-grid-bg" style={{ position: 'relative', overflow: 'hidden' }}>
-      
+    <section
+      id="stats"
+      className="py-8 md:py-10 relative overflow-hidden bg-[linear-gradient(rgba(100,130,200,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(100,130,200,0.04)_1px,transparent_1px)] bg-[size:60px_60px]"
+    >
+      <div className="absolute rounded-full blur-[110px] pointer-events-none w-[500px] h-[500px] bg-slate-900/3 top-[30%] -right-[10%]" />
 
-      <div className="rs-glow" style={{ width: 500, height: 500, background: 'rgba(27,43,91,0.03)', top: '30%', right: '-10%' }} />
-
-      <div className="rs-wrap" style={{ position: 'relative', zIndex: 1 }}>
+      <div className="w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
 
         {/* ── Stats header ── */}
-        <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-          <span className="rs-label">Angka Nyata</span>
-          <h2 className="rs-heading">Dipercaya Ribuan Developer</h2>
+        <div className="text-center mb-10">
+          <span className="block text-[0.7rem] font-bold tracking-[0.2em] uppercase text-[#F47920] mb-3">Angka Nyata</span>
+          <h2 className="text-[clamp(1.75rem,4vw,3rem)] font-extrabold leading-tight text-slate-800 mb-5">Dipercaya Ribuan Developer</h2>
         </div>
 
         {/* ── Stats grid ── */}
-        <div ref={ref} className="rs-grid-4" style={{ marginBottom: '4rem' }}>
+        <div ref={ref} className="grid grid-cols-1 min-[480px]:grid-cols-2 lg:grid-cols-4 gap-5 mb-16">
           {stats.map((s, i) => (
             <motion.div
               key={s.label}
-              className="rs-card"
+              className="bg-white border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.02)] rounded-2xl p-6 transition-all duration-300 hover:border-orange-500/22 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(15,23,42,0.06)] text-center"
               initial={{ opacity: 0 }}
               animate={inView ? { opacity: 1 } : {}}
               transition={{ delay: i * 0.09 }}
-              style={{ textAlign: 'center' }}
             >
               <div
-                className="rs-icon-box"
-                style={{ background: s.bg, borderColor: s.br, margin: '0 auto 0.75rem' }}
+                className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 border mx-auto mb-3"
+                style={{ background: s.bg, borderColor: s.br }}
               >
                 <s.icon size={18} color={s.clr} />
               </div>
-              <div style={{ fontSize: '1.875rem', fontWeight: 800, color: s.clr, marginBottom: '0.25rem' }}>
+              <div className="text-3xl font-black mb-1" style={{ color: s.clr }}>
                 <CountUp value={s.value} suffix={s.suffix} />
               </div>
-              <div style={{ fontSize: '0.8125rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.2' }}>{s.label}</div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{s.sub}</div>
+              <div className="text-[0.8125rem] font-bold text-slate-800 mb-1">{s.label}</div>
+              <div className="text-[0.72rem] text-slate-500">{s.sub}</div>
             </motion.div>
           ))}
         </div>
 
         {/* ── Testimonials header ── */}
-        <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-          <span className="rs-label">Testimoni</span>
-          <h2 className="rs-heading">Apa Kata Mereka?</h2>
+        <div className="text-center mb-10">
+          <span className="block text-[0.7rem] font-bold tracking-[0.2em] uppercase text-[#F47920] mb-3">Testimoni</span>
+          <h2 className="text-[clamp(1.75rem,4vw,3rem)] font-extrabold leading-tight text-slate-800 mb-5">Apa Kata Mereka?</h2>
         </div>
 
         {/* ── Testimonials Auto-scroll Carousel ── */}
-        <div style={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
-          gap: '1.5rem', 
-          overflow: 'hidden', 
-          position: 'relative', 
-          width: '100%', 
-          padding: '0.5rem 0',
-          maskImage: 'linear-gradient(to right, transparent, white 10%, white 90%, transparent)',
-          WebkitMaskImage: 'linear-gradient(to right, transparent, white 10%, white 90%, transparent)',
-        }}>
+        <div 
+          className="flex flex-col gap-6 overflow-hidden relative w-full py-2"
+          style={{
+            maskImage: 'linear-gradient(to right, transparent, white 10%, white 90%, transparent)',
+            WebkitMaskImage: 'linear-gradient(to right, transparent, white 10%, white 90%, transparent)',
+          }}
+        >
           
           {/* Row 1: scrolling left */}
           <Marquee speed={40} direction="left" pauseOnHover={true} gradient={false}>
             {testimonialsRow1.map((t, idx) => (
               <div
                 key={`${t.name}-${idx}`}
-                className="rs-card"
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '1rem',
-                  width: 'clamp(18rem, 85vw, 24rem)',
-                  flexShrink: 0,
-                  whiteSpace: 'normal',
-                  boxShadow: '0 4px 20px rgba(15, 23, 42, 0.01)',
-                  marginRight: '1.5rem',
-                }}
+                className="bg-white border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.02)] rounded-2xl p-6 transition-all duration-300 hover:border-orange-500/22 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(15,23,42,0.06)] flex flex-col gap-4 w-[clamp(18rem,85vw,24rem)] shrink-0 whitespace-normal mr-6"
               >
-                <div style={{ display: 'flex', gap: '0.25rem' }}>
+                <div className="flex gap-1">
                   {Array.from({ length: 5 }).map((_, si) => (
                     <Star key={si} size={13} fill="#F47920" color="#F47920" />
                   ))}
                 </div>
-                <p style={{ fontSize: '0.8375rem', color: 'var(--text-secondary)', lineHeight: 1.65, flex: 1, margin: 0 }}>
+                <p className="text-[0.8375rem] text-slate-600 leading-relaxed flex-1 m-0">
                   &ldquo;{t.quote}&rdquo;
                 </p>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border)', marginTop: '0.5rem' }}>
-                  <div style={{ width: '2.25rem', height: '2.25rem', borderRadius: '50%', background: t.clr, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '0.7rem', fontWeight: 700, flexShrink: 0 }}>
+                <div className="flex items-center gap-3 pt-3 border-t border-slate-200 mt-2">
+                  <div 
+                    className="w-9 h-9 rounded-full flex items-center justify-center text-white text-[0.7rem] font-bold shrink-0"
+                    style={{ background: t.clr }}
+                  >
                     {t.av}
                   </div>
                   <div>
-                    <p style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{t.name}</p>
-                    <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', margin: 0 }}>{t.role}</p>
+                    <p className="text-[0.85rem] font-bold text-slate-800 m-0">{t.name}</p>
+                    <p className="text-[0.7rem] text-slate-500 m-0">{t.role}</p>
                   </div>
                 </div>
               </div>
@@ -137,33 +126,26 @@ export default function StatsAndTestimonials() {
             {testimonialsRow2.map((t, idx) => (
               <div
                 key={`${t.name}-${idx}`}
-                className="rs-card"
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '1rem',
-                  width: 'clamp(18rem, 85vw, 24rem)',
-                  flexShrink: 0,
-                  whiteSpace: 'normal',
-                  boxShadow: '0 4px 20px rgba(15, 23, 42, 0.01)',
-                  marginRight: '1.5rem',
-                }}
+                className="bg-white border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.02)] rounded-2xl p-6 transition-all duration-300 hover:border-orange-500/22 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(15,23,42,0.06)] flex flex-col gap-4 w-[clamp(18rem,85vw,24rem)] shrink-0 whitespace-normal mr-6"
               >
-                <div style={{ display: 'flex', gap: '0.25rem' }}>
+                <div className="flex gap-1">
                   {Array.from({ length: 5 }).map((_, si) => (
                     <Star key={si} size={13} fill="#F47920" color="#F47920" />
                   ))}
                 </div>
-                <p style={{ fontSize: '0.8375rem', color: 'var(--text-secondary)', lineHeight: 1.65, flex: 1, margin: 0 }}>
+                <p className="text-[0.8375rem] text-slate-600 leading-relaxed flex-1 m-0">
                   &ldquo;{t.quote}&rdquo;
                 </p>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border)', marginTop: '0.5rem' }}>
-                  <div style={{ width: '2.25rem', height: '2.25rem', borderRadius: '50%', background: t.clr, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '0.7rem', fontWeight: 700, flexShrink: 0 }}>
+                <div className="flex items-center gap-3 pt-3 border-t border-slate-200 mt-2">
+                  <div 
+                    className="w-9 h-9 rounded-full flex items-center justify-center text-white text-[0.7rem] font-bold shrink-0"
+                    style={{ background: t.clr }}
+                  >
                     {t.av}
                   </div>
                   <div>
-                    <p style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{t.name}</p>
-                    <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', margin: 0 }}>{t.role}</p>
+                    <p className="text-[0.85rem] font-bold text-slate-800 m-0">{t.name}</p>
+                    <p className="text-[0.7rem] text-slate-500 m-0">{t.role}</p>
                   </div>
                 </div>
               </div>

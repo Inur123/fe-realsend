@@ -29,23 +29,17 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    <section id="how-it-works" className="rs-section" style={{ position: 'relative', overflow: 'hidden' }}>
-      <div
-        style={{
-          position: 'absolute', inset: 0,
-          background: 'linear-gradient(to bottom, transparent, rgba(27,43,91,0.01), transparent)',
-          pointerEvents: 'none',
-        }}
-      />
+    <section id="how-it-works" className="py-8 md:py-10 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-900/1 to-transparent pointer-events-none" />
 
-      <div className="rs-wrap" style={{ position: 'relative', zIndex: 1 }}>
+      <div className="w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <span className="rs-label">Cara Kerja</span>
-          <h2 className="rs-heading" style={{ marginBottom: '0.5rem' }}>
-            Mulai dalam <span className="rs-gradient-text">3 Langkah Mudah</span>
+        <div className="text-center mb-8">
+          <span className="block text-[0.7rem] font-bold tracking-[0.2em] uppercase text-[#F47920] mb-3">Cara Kerja</span>
+          <h2 className="text-[clamp(1.75rem,4vw,3rem)] font-extrabold leading-tight text-slate-800 mb-2">
+            Mulai dalam <span className="bg-gradient-to-r from-[#F47920] to-[#FF9A4A] bg-clip-text text-transparent">3 Langkah Mudah</span>
           </h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', maxWidth: '32rem', margin: '0 auto', lineHeight: 1.6 }}>
+          <p className="text-slate-600 text-sm max-w-lg mx-auto leading-relaxed">
             Dari integrasi hingga pengiriman email pertama kurang dari 5 menit.
           </p>
         </div>
@@ -59,56 +53,41 @@ export default function HowItWorks() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="rs-card"
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                position: 'relative',
-                overflow: 'hidden',
-                padding: '1.5rem',
-                height: '100%',
-              }}
+              className="bg-white border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.02)] rounded-2xl transition-all duration-300 hover:border-orange-500/22 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(15,23,42,0.06)] flex flex-col relative overflow-hidden p-6 h-full"
             >
               {/* Giant background step number */}
-              <span style={{
-                position: 'absolute',
-                top: '-0.5rem',
-                right: '0.75rem',
-                fontSize: '5rem',
-                fontWeight: 900,
-                color: step.accent,
-                opacity: 0.06,
-                userSelect: 'none',
-                lineHeight: 1,
-              }}>
+              <span 
+                className="absolute -top-2 right-3 text-8xl font-black opacity-6 select-none leading-none"
+                style={{ color: step.accent }}
+              >
                 {step.num}
               </span>
 
               <div>
                 {/* Icon & Label */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-                  <div style={{
-                    width: '2.5rem',
-                    height: '2.5rem',
-                    borderRadius: '0.625rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: `${step.accent}12`,
-                    border: `1px solid ${step.accent}30`,
-                  }}>
+                <div className="flex items-center gap-3 mb-4">
+                  <div 
+                    className="w-10 h-10 rounded-lg flex items-center justify-center"
+                    style={{
+                      background: `${step.accent}12`,
+                      border: `1px solid ${step.accent}30`,
+                    }}
+                  >
                     <step.icon size={16} color={step.accent} />
                   </div>
-                  <span style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: step.accent }}>
+                  <span 
+                    className="text-[0.65rem] font-extrabold uppercase tracking-wider"
+                    style={{ color: step.accent }}
+                  >
                     Langkah {step.num}
                   </span>
                 </div>
 
                 {/* Title & Desc */}
-                <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.5rem', marginTop: 0 }}>
+                <h3 className="text-base font-extrabold text-slate-800 mb-2 mt-0">
                   {step.title}
                 </h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.6, margin: 0 }}>
+                <p className="text-slate-600 text-[0.85rem] leading-relaxed m-0">
                   {step.desc}
                 </p>
               </div>

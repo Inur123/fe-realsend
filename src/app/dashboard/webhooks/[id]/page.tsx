@@ -11,7 +11,6 @@ import { Switch } from "@/components/ui/switch";
 import { useConfirm } from "@/hooks/use-confirm";
 import { toast } from "sonner";
 import {
-  Webhook as WebhookIcon,
   Loader2,
   Copy,
   Check,
@@ -157,7 +156,6 @@ export default function WebhookDetailPage() {
           </Button>
           <div>
             <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-              <WebhookIcon className="h-7 w-7 text-orange-500" />
               Webhook Detail
             </h1>
             <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm break-all">

@@ -1,24 +1,14 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { AppSidebar } from "@/components/app-sidebar";
-import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { Loader2Icon, Sparkles } from "lucide-react";
 
 const PLAN_FALLBACKS: Record<string, { daily_email_limit: number; name: string }> = {
@@ -35,7 +25,6 @@ export default function DashboardLayout({
 }) {
   const { user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
-  const pathname = usePathname();
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -45,44 +34,6 @@ export default function DashboardLayout({
 
   // Plan limit is derived directly from fallback map — no extra API call needed.
   // The user's plan_slug already comes from the AuthContext (set at login/refresh).
-
-  // Generate dynamic breadcrumbs based on pathname
-  const getBreadcrumbs = () => {
-    const segments = pathname.split("/").filter(Boolean);
-    const crumbs: { label: string; href: string; isCurrent?: boolean }[] = [];
-
-    const labelMap: Record<string, string> = {
-      dashboard: "Dashboard",
-      domains: "Domain Sending",
-      "api-keys": "API Keys",
-      webhooks: "Webhooks",
-      logs: "Email Logs",
-      settings: "Settings",
-      profile: "Profil Pengguna",
-      security: "Keamanan & Password",
-      billing: "Subscription & Billing",
-    };
-
-    crumbs.push({ label: "Dashboard", href: "/dashboard" });
-
-    if (segments.length > 1) {
-      let currentHref = "";
-      for (let i = 1; i < segments.length; i += 1) {
-        currentHref += `/${segments[i]}`;
-        const segment = segments[i];
-        crumbs.push({
-          label: labelMap[segment] || segment.charAt(0).toUpperCase() + segment.slice(1),
-          href: `/dashboard${currentHref}`,
-          isCurrent: i === segments.length - 1,
-        });
-      }
-      crumbs[0].isCurrent = false;
-    } else {
-      crumbs[0].isCurrent = true;
-    }
-
-    return crumbs;
-  };
 
   if (isLoading) {
     return (
@@ -96,7 +47,6 @@ export default function DashboardLayout({
     return null;
   }
 
-  const crumbs = getBreadcrumbs();
   const sub = user?.subscription;
   const emailsSentToday = sub?.emails_sent_today || 0;
   const activePlanSlug = user?.plan_slug || "free";
@@ -111,28 +61,6 @@ export default function DashboardLayout({
         <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between gap-2 border-b border-sidebar-border bg-background px-4 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2">
             <SidebarTrigger className="-ml-1 md:hidden" />
-            <Separator
-              orientation="vertical"
-              className="mx-2 h-4 md:hidden"
-            />
-            <Breadcrumb>
-              <BreadcrumbList>
-                {crumbs.map((crumb, idx) => (
-                  <React.Fragment key={crumb.href}>
-                    {idx > 0 && <BreadcrumbSeparator />}
-                    <BreadcrumbItem>
-                      {crumb.isCurrent ? (
-                        <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
-                      ) : (
-                        <BreadcrumbLink render={<Link href={crumb.href} />}>
-                          {crumb.label}
-                        </BreadcrumbLink>
-                      )}
-                    </BreadcrumbItem>
-                  </React.Fragment>
-                ))}
-              </BreadcrumbList>
-            </Breadcrumb>
           </div>
 
           {/* Header Right Content: Quota & Plan Info */}

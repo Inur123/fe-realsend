@@ -13,7 +13,6 @@ import {
   Dialog, 
   DialogContent, 
   DialogDescription, 
-  DialogFooter, 
   DialogHeader, 
   DialogTitle 
 } from "@/components/ui/dialog";
@@ -706,16 +705,16 @@ export default function UserManagementPage() {
 
       {/* DIALOG 1: Suspend Account */}
       <Dialog open={suspendModalOpen} onOpenChange={setSuspendModalOpen}>
-        <DialogContent className="max-w-md bg-white dark:bg-slate-950 border border-slate-100 shadow-xl rounded-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-lg font-bold text-slate-800 dark:text-white">
+        <DialogContent className="grid max-h-[calc(100dvh-2rem)] w-[calc(100vw-1.5rem)] max-w-[calc(100vw-1.5rem)] grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden rounded-2xl border border-slate-100 bg-white p-0 shadow-2xl sm:max-w-2xl dark:bg-slate-950">
+          <DialogHeader className="border-b border-slate-100 bg-slate-50 px-4 pb-4 pt-5 pr-12 sm:px-6 sm:pb-5 sm:pt-6 dark:bg-slate-900/40 dark:border-slate-900">
+            <DialogTitle className="text-lg font-bold leading-tight text-slate-800 sm:text-xl dark:text-white">
               Tangguhkan Akun Pengguna
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="mt-2 text-sm leading-relaxed">
               Menangguhkan {selectedUser?.email} akan mencegah pengiriman email baru, verifikasi domain, atau pembuatan API Key.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4">
+          <div className="space-y-5 overflow-y-auto px-4 py-6 sm:px-6 sm:py-7">
             <div className="space-y-2">
               <Label htmlFor="suspend-reason" className="text-sm font-semibold text-slate-600 dark:text-slate-400">
                 Alasan Penangguhan (Opsional)
@@ -725,45 +724,45 @@ export default function UserManagementPage() {
                 placeholder="Masukkan alasan pemblokiran akun..."
                 value={suspendReason}
                 onChange={(e) => setSuspendReason(e.target.value)}
-                className="bg-white border-slate-200"
+                className="h-11 bg-white border-slate-200"
               />
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setSuspendModalOpen(false)}>
-              Batal
-            </Button>
+          <div className="flex flex-col gap-3 border-t border-slate-100 bg-slate-50 p-4 sm:flex-row-reverse sm:justify-start dark:bg-slate-900/40 dark:border-slate-900">
             <Button 
               variant="destructive" 
               onClick={handleSuspendSubmit} 
               disabled={submittingAction}
-              className="bg-red-600 hover:bg-red-700 text-white font-bold"
+              className="h-10 w-full bg-red-600 font-bold text-white hover:bg-red-700 sm:w-auto"
             >
               {submittingAction && <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />}
               Tangguhkan Sekarang
             </Button>
-          </DialogFooter>
+            <Button variant="outline" onClick={() => setSuspendModalOpen(false)} className="h-10 w-full sm:w-auto">
+              Batal
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
 
       {/* DIALOG 2: Change User Role */}
       <Dialog open={roleModalOpen} onOpenChange={setRoleModalOpen}>
-        <DialogContent className="max-w-md bg-white dark:bg-slate-950 border border-slate-100 shadow-xl rounded-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-lg font-bold text-slate-800 dark:text-white">
+        <DialogContent className="grid max-h-[calc(100dvh-2rem)] w-[calc(100vw-1.5rem)] max-w-[calc(100vw-1.5rem)] grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden rounded-2xl border border-slate-100 bg-white p-0 shadow-2xl sm:max-w-2xl dark:bg-slate-950">
+          <DialogHeader className="border-b border-slate-100 bg-slate-50 px-4 pb-4 pt-5 pr-12 sm:px-6 sm:pb-5 sm:pt-6 dark:bg-slate-900/40 dark:border-slate-900">
+            <DialogTitle className="text-lg font-bold leading-tight text-slate-800 sm:text-xl dark:text-white">
               Ubah Role Akses Pengguna
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="mt-2 text-sm leading-relaxed">
               Modifikasi otorisasi akun {selectedUser?.email} di dalam platform RealSend.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4">
+          <div className="space-y-5 overflow-y-auto px-4 py-6 sm:px-6 sm:py-7">
             <div className="space-y-2">
               <Label htmlFor="role-select" className="text-sm font-semibold text-slate-600 dark:text-slate-400">
                 Pilih Role Pengguna
               </Label>
               <Select value={selectedRole} onValueChange={(val) => val && setSelectedRole(val)}>
-                <SelectTrigger id="role-select" className="w-full h-10 bg-white dark:bg-slate-900 border-slate-200">
+                <SelectTrigger id="role-select" className="w-full h-11 bg-white dark:bg-slate-900 border-slate-200">
                   <SelectValue placeholder="Pilih Role" />
                 </SelectTrigger>
                 <SelectContent>
@@ -774,36 +773,38 @@ export default function UserManagementPage() {
               </Select>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setRoleModalOpen(false)}>
-              Batal
-            </Button>
+          <div className="flex flex-col gap-3 border-t border-slate-100 bg-slate-50 p-4 sm:flex-row-reverse sm:justify-start dark:bg-slate-900/40 dark:border-slate-900">
             <Button 
               onClick={handleRoleSubmit} 
               disabled={submittingAction}
-              className="bg-orange-500 hover:bg-orange-600 text-white font-bold"
+              className="h-10 w-full bg-orange-500 font-bold text-white hover:bg-orange-600 sm:w-auto"
             >
               {submittingAction && <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />}
               Perbarui Role
             </Button>
-          </DialogFooter>
+            <Button variant="outline" onClick={() => setRoleModalOpen(false)} className="h-10 w-full sm:w-auto">
+              Batal
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
 
       {/* DIALOG 3: Manage Limit & Feature Overrides */}
       <Dialog open={overrideModalOpen} onOpenChange={setOverrideModalOpen}>
-        <DialogContent className="sm:max-w-2xl bg-white dark:bg-slate-950 border border-slate-100 shadow-2xl rounded-2xl overflow-hidden p-0">
-          <div className="p-6 bg-slate-50 dark:bg-slate-900/40 border-b border-slate-100 dark:border-slate-900">
-            <DialogTitle className="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
-              <ZapIcon className="h-5 w-5 text-orange-500" />
+        <DialogContent className="grid max-h-[calc(100dvh-2rem)] w-[calc(100vw-1.5rem)] max-w-[calc(100vw-1.5rem)] grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden rounded-2xl border border-slate-100 bg-white p-0 shadow-2xl sm:max-w-2xl dark:bg-slate-950">
+          <div className="border-b border-slate-100 bg-slate-50 px-4 pb-4 pt-5 pr-12 sm:px-6 sm:pb-5 sm:pt-6 dark:bg-slate-900/40 dark:border-slate-900">
+            <DialogTitle className="text-lg font-bold leading-tight text-slate-800 sm:text-xl dark:text-white">
               Kelola Limitasi & Fitur Override
             </DialogTitle>
-            <DialogDescription className="mt-1">
-              Setel pembatasan custom (kuota pengiriman, domain, dll.) atau aktifkan fitur khusus untuk **{selectedUser?.email}**.
+            <DialogDescription className="mt-2 text-sm leading-relaxed">
+              Setel pembatasan custom atau aktifkan fitur khusus untuk{" "}
+              <span className="font-semibold text-slate-700 break-all dark:text-slate-200">
+                {selectedUser?.email}
+              </span>.
             </DialogDescription>
           </div>
 
-          <div className="p-6 space-y-6 max-h-[60vh] overflow-y-auto">
+          <div className="space-y-5 overflow-y-auto px-4 py-5 sm:space-y-6 sm:px-6 sm:py-6">
             {/* Active Overrides Section */}
             <div>
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">
@@ -812,9 +813,9 @@ export default function UserManagementPage() {
               {selectedUser?.overrides && selectedUser.overrides.length > 0 ? (
                 <div className="border border-slate-100 dark:border-slate-900 rounded-xl overflow-hidden divide-y divide-slate-100 dark:divide-slate-900 bg-white dark:bg-slate-950">
                   {selectedUser.overrides.map((ov) => (
-                    <div key={ov.id} className="p-3.5 flex items-center justify-between text-sm">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
+                    <div key={ov.id} className="flex items-start justify-between gap-3 p-3.5 text-sm">
+                      <div className="min-w-0 space-y-1">
+                        <div className="flex flex-wrap items-center gap-2">
                           <span className="font-mono font-bold text-orange-600 dark:text-orange-400 bg-orange-500/5 px-2 py-0.5 rounded text-xs">
                             {ov.feature_key}
                           </span>
@@ -838,7 +839,7 @@ export default function UserManagementPage() {
                         variant="ghost"
                         size="icon"
                         onClick={() => handleDeleteOverride(ov.feature_key)}
-                        className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                        className="h-8 w-8 shrink-0 text-red-500 hover:text-red-600 hover:bg-red-50"
                       >
                         <Trash2Icon className="h-4 w-4" />
                       </Button>
@@ -846,19 +847,19 @@ export default function UserManagementPage() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-6 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl text-slate-400 text-xs">
+                <div className="rounded-xl border border-dashed border-slate-200 px-4 py-5 text-center text-sm leading-relaxed text-slate-400 dark:border-slate-800">
                   Tidak ada limitasi custom untuk pengguna ini. Limit default mengikuti paket subscription saat ini.
                 </div>
               )}
             </div>
 
             {/* Set New Override Form */}
-            <div className="border-t border-slate-100 dark:border-slate-900 pt-5 space-y-4">
+            <div className="space-y-4 border-t border-slate-100 pt-5 dark:border-slate-900">
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Tambah Override Baru
               </h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2 col-span-2 sm:col-span-1">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
                   <Label htmlFor="ov-key" className="text-xs font-bold text-slate-500 uppercase tracking-wide">Pilih Fitur / Batasan</Label>
                   <Select value={newOverrideKey} onValueChange={(val) => {
                     if (val) {
@@ -866,7 +867,7 @@ export default function UserManagementPage() {
                       setNewOverrideValue("");
                     }
                   }}>
-                    <SelectTrigger id="ov-key" className="w-full h-10 bg-white dark:bg-slate-900 border-slate-200">
+                    <SelectTrigger id="ov-key" className="h-11 w-full bg-white dark:bg-slate-900 border-slate-200">
                       <SelectValue placeholder="Pilih Kunci Override" />
                     </SelectTrigger>
                     <SelectContent>
@@ -883,9 +884,9 @@ export default function UserManagementPage() {
                   </Select>
                 </div>
 
-                <div className="space-y-2 col-span-2 sm:col-span-1 flex flex-col justify-end">
+                <div className="flex flex-col justify-end space-y-2">
                   {isBooleanFeature(newOverrideKey) ? (
-                    <div className="flex items-center justify-between border border-slate-200 dark:border-slate-800 rounded-lg px-3 bg-white h-10">
+                    <div className="flex h-11 items-center justify-between rounded-lg border border-slate-200 bg-white px-3 dark:border-slate-800 dark:bg-slate-900">
                       <Label htmlFor="ov-bool" className="text-xs font-bold text-slate-500 uppercase tracking-wide cursor-pointer">Status Fitur</Label>
                       <Switch 
                         id="ov-bool" 
@@ -902,13 +903,13 @@ export default function UserManagementPage() {
                         placeholder="Nilai angka limit..."
                         value={newOverrideValue}
                         onChange={(e) => setNewOverrideValue(e.target.value)}
-                        className="bg-white border-slate-200 h-10"
+                        className="h-11 bg-white border-slate-200"
                       />
                     </div>
                   )}
                 </div>
 
-                <div className="space-y-2 col-span-2 sm:col-span-1">
+                <div className="space-y-2">
                   <Label htmlFor="ov-dur" className="text-xs font-bold text-slate-500 uppercase tracking-wide">Durasi Berlaku (Hari)</Label>
                   <Input
                     id="ov-dur"
@@ -916,27 +917,27 @@ export default function UserManagementPage() {
                     placeholder="Kosongkan jika selamanya..."
                     value={newOverrideDuration}
                     onChange={(e) => setNewOverrideDuration(e.target.value)}
-                    className="bg-white border-slate-200 h-10"
+                    className="h-11 bg-white border-slate-200"
                   />
                 </div>
 
-                <div className="space-y-2 col-span-2 sm:col-span-1">
+                <div className="space-y-2">
                   <Label htmlFor="ov-note" className="text-xs font-bold text-slate-500 uppercase tracking-wide">Catatan Alasan</Label>
                   <Input
                     id="ov-note"
                     placeholder="Contoh: Upgrade kuota sementara event promo..."
                     value={newOverrideNote}
                     onChange={(e) => setNewOverrideNote(e.target.value)}
-                    className="bg-white border-slate-200 h-10"
+                    className="h-11 bg-white border-slate-200"
                   />
                 </div>
               </div>
 
-              <div className="flex justify-end pt-2">
+              <div className="flex pt-1 sm:justify-end">
                 <Button 
                   onClick={handleAddOverride} 
                   disabled={submittingAction}
-                  className="bg-orange-500 hover:bg-orange-600 text-white font-bold gap-2 px-5"
+                  className="h-10 w-full gap-2 bg-orange-500 px-5 font-bold text-white hover:bg-orange-600 sm:w-auto"
                 >
                   {submittingAction ? (
                     <Loader2Icon className="h-4 w-4 animate-spin" />
@@ -949,8 +950,8 @@ export default function UserManagementPage() {
             </div>
           </div>
 
-          <div className="p-6 bg-slate-50 dark:bg-slate-900/40 border-t border-slate-100 dark:border-slate-900 flex justify-end">
-            <Button variant="outline" onClick={() => setOverrideModalOpen(false)}>
+          <div className="flex justify-end border-t border-slate-100 bg-slate-50 p-4 dark:bg-slate-900/40 dark:border-slate-900">
+            <Button variant="outline" onClick={() => setOverrideModalOpen(false)} className="h-10 w-full sm:w-auto">
               Tutup
             </Button>
           </div>

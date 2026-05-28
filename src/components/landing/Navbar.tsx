@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Zap } from 'lucide-react';
 
 const navLinks = [
@@ -40,71 +39,45 @@ export default function Navbar() {
   };
 
   return (
-    <motion.header
-      initial={{ y: -70, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-      style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
-        transition: 'background 0.3s, border-color 0.3s',
-        background: scrolled ? 'rgba(255, 255, 255, 0.93)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(20px)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(15, 23, 42, 0.08)' : '1px solid transparent',
-      }}
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        scrolled ? 'bg-white/93 backdrop-blur-lg border-b border-slate-900/8' : 'bg-transparent backdrop-blur-none border-b border-transparent'
+      }`}
     >
-      <div className="rs-wrap" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '4.5rem' }}>
+      <div className="w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative flex items-center justify-between h-18">
 
-        {/* Logo — gunakan gambar asli logo-text-realsend */}
+        {/* Logo — gunakan gambar logo dan text realsend terpisah */}
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            background: 'transparent',
-            border: 'none',
-            padding: 0,
-            cursor: 'pointer',
-            flexShrink: 0
-          }}
+          className="flex items-center gap-2.5 bg-transparent border-0 p-0 cursor-pointer shrink-0"
         >
           <Image
-            src="/images/logo-text-realsend.png"
-            alt="RealSend Logo"
-            width={140}
-            height={45}
-            style={{ height: '2.8rem', width: 'auto', objectFit: 'contain' }}
+            src="/images/logo-realsend.png"
+            alt="RealSend Logo Icon"
+            width={32}
+            height={32}
+            className="h-8 w-auto object-contain"
+            priority
+          />
+          <Image
+            src="/images/text-realsend.png"
+            alt="RealSend Logo Text"
+            width={110}
+            height={30}
+            className="h-7 w-auto object-contain"
             priority
           />
         </button>
 
         {/* Desktop nav */}
         <nav
-          style={{
-            position: 'absolute',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            alignItems: 'center',
-            gap: '0.25rem'
-          }}
-          className="hidden md:flex"
+          className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-1"
         >
           {navLinks.map((l) => (
             <button
               key={l.href}
               onClick={() => handleScroll(l.href)}
-              style={{
-                padding: '0.5rem 1rem',
-                borderRadius: '0.5rem',
-                fontSize: '0.875rem',
-                fontWeight: 500,
-                color: 'var(--text-secondary)',
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                transition: 'color 0.2s, background 0.2s',
-              }}
-              onMouseEnter={(e) => { (e.target as HTMLElement).style.color = 'var(--text-primary)'; (e.target as HTMLElement).style.background = 'rgba(15, 23, 42, 0.05)'; }}
-              onMouseLeave={(e) => { (e.target as HTMLElement).style.color = 'var(--text-secondary)'; (e.target as HTMLElement).style.background = 'transparent'; }}
+              className="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 bg-transparent border-0 cursor-pointer transition-all duration-200 hover:text-slate-900 hover:bg-slate-900/5"
             >
               {l.label}
             </button>
@@ -112,26 +85,17 @@ export default function Navbar() {
         </nav>
 
         {/* CTA buttons */}
-        <div style={{ alignItems: 'center', gap: '0.75rem' }} className="hidden md:flex">
+        <div className="hidden md:flex items-center gap-3">
           <button
             onClick={() => router.push('/login')}
-            style={{
-              padding: '0.5rem 1.25rem',
-              borderRadius: '0.625rem',
-              fontSize: '0.875rem',
-              fontWeight: 500,
-              color: 'var(--text-secondary)',
-              border: '1.5px solid rgba(15, 23, 42, 0.15)',
-              background: 'transparent',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-            }}
-            onMouseEnter={(e) => { (e.target as HTMLElement).style.color = 'var(--text-primary)'; (e.target as HTMLElement).style.borderColor = 'rgba(15, 23, 42, 0.3)'; }}
-            onMouseLeave={(e) => { (e.target as HTMLElement).style.color = 'var(--text-secondary)'; (e.target as HTMLElement).style.borderColor = 'rgba(15, 23, 42, 0.15)'; }}
+            className="px-5 py-2 rounded-lg text-sm font-medium text-slate-600 border border-slate-900/15 bg-transparent cursor-pointer transition-all duration-200 hover:text-slate-900 hover:border-slate-900/30"
           >
             Masuk
           </button>
-          <button onClick={() => router.push('/register')} className="rs-btn-primary" style={{ padding: '0.5rem 1.25rem', fontSize: '0.875rem', border: 'none', cursor: 'pointer' }}>
+          <button 
+            onClick={() => router.push('/register')} 
+            className="inline-flex items-center justify-center gap-2 rounded-lg font-bold text-white bg-linear-to-br from-[#F47920] to-[#D4661A] hover:brightness-110 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 px-5 py-2 text-sm border-0 cursor-pointer"
+          >
             <Zap size={15} />
             Mulai Gratis
           </button>
@@ -139,93 +103,46 @@ export default function Navbar() {
 
         {/* Hamburger */}
         <button
-          className="flex md:hidden items-center justify-center"
+          className="flex md:hidden items-center justify-center p-2 bg-transparent border-0 cursor-pointer text-slate-600 overflow-hidden"
           onClick={() => setOpen(!open)}
           aria-label="Toggle menu"
-          style={{ 
-            padding: '0.5rem', 
-            background: 'transparent', 
-            border: 'none', 
-            cursor: 'pointer', 
-            color: 'var(--text-secondary)',
-            overflow: 'hidden'
-          }}
         >
-          <motion.div
-            key={open ? 'open' : 'closed'}
-            initial={{ rotate: -90, opacity: 0, scale: 0.8 }}
-            animate={{ rotate: 0, opacity: 1, scale: 1 }}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
-            style={{ display: 'flex' }}
-          >
+          <div className="flex">
             {open ? <X size={22} /> : <Menu size={22} />}
-          </motion.div>
+          </div>
         </button>
       </div>
 
       {/* Mobile menu */}
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
-            style={{
-              overflow: 'hidden',
-              borderTop: '1px solid rgba(15, 23, 42, 0.08)',
-              background: 'rgba(255, 255, 255, 0.98)',
-              backdropFilter: 'blur(20px)',
-            }}
-          >
-            <div className="rs-wrap" style={{ paddingTop: '1rem', paddingBottom: '1rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-              {navLinks.map((l) => (
-                <button
-                  key={l.href}
-                  onClick={() => { setOpen(false); handleScroll(l.href); }}
-                  style={{ 
-                    padding: '0.75rem 1rem', 
-                    borderRadius: '0.5rem', 
-                    fontSize: '0.875rem', 
-                    fontWeight: 500, 
-                    color: 'var(--text-secondary)', 
-                    textAlign: 'left',
-                    background: 'transparent',
-                    border: 'none',
-                    cursor: 'pointer'
-                  }}
-                >
-                  {l.label}
-                </button>
-              ))}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid rgba(15, 23, 42, 0.08)' }}>
-                <button 
-                  onClick={() => { setOpen(false); router.push('/login'); }} 
-                  style={{ 
-                    padding: '0.75rem 1rem', 
-                    textAlign: 'center', 
-                    fontSize: '0.875rem', 
-                    border: '1.5px solid rgba(15, 23, 42, 0.15)', 
-                    borderRadius: '0.625rem', 
-                    color: 'var(--text-secondary)', 
-                    background: 'transparent',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Masuk
-                </button>
-                <button 
-                  onClick={() => { setOpen(false); router.push('/register'); }} 
-                  className="rs-btn-primary" 
-                  style={{ fontSize: '0.875rem', border: 'none', cursor: 'pointer' }}
-                >
-                  <Zap size={15} /> Mulai Gratis
-                </button>
-              </div>
+      {open && (
+        <div className="overflow-hidden border-t border-slate-900/8 bg-white/98 backdrop-blur-lg">
+          <div className="w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-4 flex flex-col gap-1">
+            {navLinks.map((l) => (
+              <button
+                key={l.href}
+                onClick={() => { setOpen(false); handleScroll(l.href); }}
+                className="px-4 py-3 rounded-lg text-sm font-medium text-slate-600 text-left bg-transparent border-0 cursor-pointer hover:bg-slate-900/5 hover:text-slate-900 transition-colors duration-200"
+              >
+                {l.label}
+              </button>
+            ))}
+            <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-slate-900/8">
+              <button 
+                onClick={() => { setOpen(false); router.push('/login'); }} 
+                className="px-4 py-3 text-center text-sm border border-slate-900/15 rounded-lg text-slate-600 bg-transparent cursor-pointer hover:text-slate-900 hover:border-slate-900/30 transition-all duration-200"
+              >
+                Masuk
+              </button>
+              <button 
+                onClick={() => { setOpen(false); router.push('/register'); }} 
+                className="inline-flex items-center justify-center gap-2 rounded-lg font-bold text-white bg-linear-to-br from-[#F47920] to-[#D4661A] hover:brightness-110 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 px-4 py-3 text-sm border-0 cursor-pointer"
+              >
+                <Zap size={15} /> Mulai Gratis
+              </button>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.header>
+          </div>
+        </div>
+      )}
+    </header>
   );
 }

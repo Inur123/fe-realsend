@@ -10,7 +10,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useConfirm } from "@/hooks/use-confirm";
 import { toast } from "sonner";
 import {
-  Globe,
   Loader2,
   Clock,
   Copy,
@@ -133,8 +132,8 @@ export default function DomainDetailPage() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 min-w-0">
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0 w-full md:w-auto">
           <Button
             variant="outline"
             size="icon"
@@ -143,12 +142,11 @@ export default function DomainDetailPage() {
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-              <Globe className="h-7 w-7 text-orange-500" />
+          <div className="min-w-0 flex-1">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white break-all">
               {domain.domain_name}
             </h1>
-            <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm">
+            <p className="text-slate-500 dark:text-slate-400 mt-1 text-xs sm:text-sm break-all">
               ID: {domain.id}
             </p>
           </div>
@@ -172,7 +170,6 @@ export default function DomainDetailPage() {
             </Button>
           ) : (
             <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/20 px-2.5 py-1 rounded-full border border-emerald-250 uppercase tracking-wider">
-              <CheckCircle className="h-3.5 w-3.5" />
               Verified
             </span>
           )}

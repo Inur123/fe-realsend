@@ -105,7 +105,7 @@ export default function Footer() {
   };
 
   return (
-    <footer style={{ background: 'linear-gradient(to bottom, var(--bg-secondary), #E2E8F0)', position: 'relative', overflow: 'hidden' }}>
+    <footer className="bg-gradient-to-b from-slate-100 to-slate-300 relative overflow-hidden">
       
 
 
@@ -138,90 +138,57 @@ export default function Footer() {
       `}} />
 
       {/* Subtle bottom glow */}
-      <div className="rs-glow" style={{ width: 450, height: 450, background: 'rgba(244,121,32,0.03)', bottom: '-200px', right: '5%', filter: 'blur(100px)' }} />
+      <div className="absolute rounded-full blur-[100px] pointer-events-none w-[450px] h-[450px] bg-[#F47920]/3 -bottom-[200px] right-[5%]" />
 
-      <div className="rs-wrap">
+      <div className="w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         
         {/* Row 1: Brand details and Newsletter Signup (top section) */}
-        <div 
-          className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8"
-          style={{ paddingTop: '4rem', paddingBottom: '3rem' }}
-        >
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 pt-16 pb-12">
           
-          <div style={{ maxWidth: '28rem' }}>
+          <div className="max-w-md">
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                background: 'transparent',
-                border: 'none',
-                padding: 0,
-                cursor: 'pointer',
-                flexShrink: 0,
-                marginBottom: '0.75rem'
-              }}
+              className="flex items-center gap-2.5 bg-transparent border-0 p-0 cursor-pointer shrink-0 mb-3"
             >
               <Image
-                src="/images/logo-text-realsend.png"
-                alt="RealSend Logo"
-                width={140}
-                height={45}
-                style={{ height: '2.8rem', width: 'auto', objectFit: 'contain' }}
+                src="/images/logo-realsend.png"
+                alt="RealSend Logo Icon"
+                width={32}
+                height={32}
+                className="h-8 w-auto object-contain"
+              />
+              <Image
+                src="/images/text-realsend.png"
+                alt="RealSend Logo Text"
+                width={110}
+                height={30}
+                className="h-7 w-auto object-contain"
               />
             </button>
-            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
+            <p className="text-sm text-slate-605 leading-relaxed m-0">
               Infrastruktur SMTP berlatensi rendah yang dirancang khusus untuk keandalan dan kecepatan pengiriman email di Indonesia.
             </p>
           </div>
 
           {/* Newsletter subscription form */}
-          <div className="w-full lg:w-auto" style={{ width: '100%', maxWidth: '24rem' }}>
-            <h4 style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
+          <div className="w-full lg:w-auto max-w-sm">
+            <h4 className="text-[0.75rem] font-bold text-slate-800 uppercase tracking-wide mb-2">
               Langganan Info & Tip
             </h4>
-            <form onSubmit={handleSubscribe} className="relative w-full" style={{ display: 'block' }}>
+            <form onSubmit={handleSubscribe} className="relative w-full block">
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email developer kamu..."
-                className="newsletter-input"
-                style={{
-                  width: '100%',
-                  padding: '0.625rem 2.5rem 0.625rem 0.875rem',
-                  borderRadius: '0.5rem',
-                  fontSize: '0.75rem',
-                  backgroundColor: 'var(--bg-card)',
-                  border: '1px solid var(--border)',
-                  color: 'var(--text-primary)',
-                  transition: 'all 0.2s',
-                  boxSizing: 'border-box',
-                }}
+                className="newsletter-input w-full pl-3.5 pr-10 py-2.5 rounded-lg text-xs bg-white border border-slate-200 text-slate-800 transition-all box-border"
                 disabled={subscribed}
               />
               <button
                 type="submit"
                 disabled={subscribed}
-                style={{
-                  position: 'absolute',
-                  right: '0.375rem',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  width: '1.75rem',
-                  height: '1.75rem',
-                  borderRadius: '0.375rem',
-                  backgroundColor: '#F47920',
-                  border: 'none',
-                  color: '#fff',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  zIndex: 10,
-                }}
-                className="hover:bg-[#D4661A] transition-colors"
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-md bg-[#F47920] border-0 text-white cursor-pointer flex items-center justify-center z-10 hover:bg-[#D4661A] transition-colors"
               >
                 {subscribed ? (
                   <Check size={12} />
@@ -230,7 +197,7 @@ export default function Footer() {
                 )}
               </button>
             </form>
-            <p style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', marginTop: '0.375rem', marginBottom: 0 }}>
+            <p className="text-[0.6875rem] text-slate-500 mt-1.5 mb-0">
               Dapatkan update teknis & tips deliverability bulanan.
             </p>
           </div>
@@ -238,14 +205,11 @@ export default function Footer() {
         </div>
 
         {/* Row 2: Grid of Links & Latency Card (balanced height columns) */}
-        <div 
-          className="grid grid-cols-2 md:grid-cols-4 gap-10"
-          style={{ paddingTop: '4rem', paddingBottom: '4rem' }}
-        >
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 pt-16 pb-16">
           
           {/* Column 1: Produk */}
           <div>
-            <h5 className="text-[11px] font-extrabold uppercase tracking-[0.2em] mb-4" style={{ color: 'var(--text-primary)' }}>
+            <h5 className="text-[11px] font-extrabold uppercase tracking-[0.2em] mb-4 text-slate-800">
               Produk
             </h5>
             <ul className="flex flex-col gap-2.5">
@@ -253,16 +217,7 @@ export default function Footer() {
                 <li key={l.label}>
                   <button
                     onClick={() => handleScroll(l.href)}
-                    className="footer-link text-xs"
-                    style={{
-                      color: 'var(--text-secondary)',
-                      background: 'transparent',
-                      border: 'none',
-                      cursor: 'pointer',
-                      padding: 0,
-                      textAlign: 'left',
-                      fontFamily: 'inherit',
-                    }}
+                    className="footer-link text-xs text-slate-600 bg-transparent border-0 cursor-pointer p-0 text-left font-inherit"
                   >
                     {l.label}
                   </button>
@@ -273,7 +228,7 @@ export default function Footer() {
 
           {/* Column 2: Developer */}
           <div>
-            <h5 className="text-[11px] font-extrabold uppercase tracking-[0.2em] mb-4" style={{ color: 'var(--text-primary)' }}>
+            <h5 className="text-[11px] font-extrabold uppercase tracking-[0.2em] mb-4 text-slate-800">
               Developer
             </h5>
             <ul className="flex flex-col gap-2.5">
@@ -281,16 +236,7 @@ export default function Footer() {
                 <li key={l.label}>
                   <button
                     onClick={() => handleScroll(l.href)}
-                    className="footer-link text-xs"
-                    style={{
-                      color: 'var(--text-secondary)',
-                      background: 'transparent',
-                      border: 'none',
-                      cursor: 'pointer',
-                      padding: 0,
-                      textAlign: 'left',
-                      fontFamily: 'inherit',
-                    }}
+                    className="footer-link text-xs text-slate-600 bg-transparent border-0 cursor-pointer p-0 text-left font-inherit"
                   >
                     {l.label}
                   </button>
@@ -301,7 +247,7 @@ export default function Footer() {
 
           {/* Column 3: Perusahaan */}
           <div>
-            <h5 className="text-[11px] font-extrabold uppercase tracking-[0.2em] mb-4" style={{ color: 'var(--text-primary)' }}>
+            <h5 className="text-[11px] font-extrabold uppercase tracking-[0.2em] mb-4 text-slate-800">
               Perusahaan
             </h5>
             <ul className="flex flex-col gap-2.5">
@@ -309,16 +255,7 @@ export default function Footer() {
                 <li key={l.label}>
                   <button
                     onClick={() => handleScroll(l.href)}
-                    className="footer-link text-xs"
-                    style={{
-                      color: 'var(--text-secondary)',
-                      background: 'transparent',
-                      border: 'none',
-                      cursor: 'pointer',
-                      padding: 0,
-                      textAlign: 'left',
-                      fontFamily: 'inherit',
-                    }}
+                    className="footer-link text-xs text-slate-600 bg-transparent border-0 cursor-pointer p-0 text-left font-inherit"
                   >
                     {l.label}
                   </button>
@@ -329,7 +266,7 @@ export default function Footer() {
 
           {/* Column 4: Legal */}
           <div>
-            <h5 className="text-[11px] font-extrabold uppercase tracking-[0.2em] mb-4" style={{ color: 'var(--text-primary)' }}>
+            <h5 className="text-[11px] font-extrabold uppercase tracking-[0.2em] mb-4 text-slate-800">
               Legal
             </h5>
             <ul className="flex flex-col gap-2.5">
@@ -337,16 +274,7 @@ export default function Footer() {
                 <li key={l.label}>
                   <button
                     onClick={() => handleScroll(l.href)}
-                    className="footer-link text-xs"
-                    style={{
-                      color: 'var(--text-secondary)',
-                      background: 'transparent',
-                      border: 'none',
-                      cursor: 'pointer',
-                      padding: 0,
-                      textAlign: 'left',
-                      fontFamily: 'inherit',
-                    }}
+                    className="footer-link text-xs text-slate-600 bg-transparent border-0 cursor-pointer p-0 text-left font-inherit"
                   >
                     {l.label}
                   </button>
@@ -358,12 +286,9 @@ export default function Footer() {
         </div>
 
         {/* Row 3: Bottom Bar (Copyright, System status & Socials) */}
-        <div 
-          className="flex flex-col md:flex-row items-center justify-between gap-6"
-          style={{ paddingTop: '2rem', paddingBottom: '2rem' }}
-        >
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-8 pb-8">
           {/* Copyright - sits at bottom on mobile (order-2) and left on desktop (order-1) */}
-          <p className="text-xs m-0 flex items-center justify-center gap-1 order-2 md:order-1 text-center" style={{ color: 'var(--text-muted)' }}>
+          <p className="text-xs m-0 flex items-center justify-center gap-1 order-2 md:order-1 text-center text-slate-500">
             © 2025 RealSend. Dibuat dengan <Heart size={12} className="fill-[#EF4444] text-[#EF4444]" style={{ display: 'inline-block' }} /> oleh developer Indonesia.
           </p>
 
@@ -374,8 +299,7 @@ export default function Footer() {
                 key={s.label}
                 onClick={() => handleSocialClick(s.href)}
                 aria-label={s.label}
-                className="w-8 h-8 rounded-lg flex items-center justify-center border border-[rgba(15,23,42,0.1)] hover:text-[#F47920] hover:border-[rgba(244,121,32,0.3)] hover:bg-[rgba(244,121,32,0.04)] transition-all duration-200"
-                style={{ color: 'var(--text-secondary)', background: 'var(--bg-secondary)', width: '2rem', height: '2rem', cursor: 'pointer', padding: 0, outline: 'none' }}
+                className="w-8 h-8 rounded-lg flex items-center justify-center border border-slate-900/10 hover:text-[#F47920] hover:border-orange-500/30 hover:bg-orange-500/5 transition-all duration-200 text-slate-600 bg-slate-100 cursor-pointer p-0 outline-none"
               >
                 <s.icon className="w-4 h-4" />
               </button>

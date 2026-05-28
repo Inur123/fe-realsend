@@ -21,30 +21,30 @@ export default function FeaturesSection() {
   const inView = useInView(ref, { once: true, margin: '-60px' });
 
   return (
-    <section id="features" className="rs-section">
-      <div className="rs-glow" style={{ width: 600, height: 600, background: 'rgba(27,43,91,0.03)', top: '50%', left: '50%', transform: 'translate(-50%,-50%)' }} />
+    <section id="features" className="py-8 md:py-10 relative">
+      <div className="absolute rounded-full blur-[110px] pointer-events-none w-[600px] h-[600px] bg-slate-900/3 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
 
-      <div className="rs-wrap" style={{ position: 'relative', zIndex: 1 }}>
+      <div className="w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+        <div className="text-center mb-14">
           <motion.span
-            className="rs-label"
+            className="block text-[0.7rem] font-bold tracking-[0.2em] uppercase text-[#F47920] mb-3"
             initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
           >
             Fitur Lengkap
           </motion.span>
           <motion.h2
-            className="rs-heading"
+            className="text-[clamp(1.75rem,4vw,3rem)] font-extrabold leading-tight text-slate-805 mb-5"
             initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
             transition={{ delay: 0.08 }}
           >
             Semua yang Kamu Butuhkan{' '}
-            <span className="rs-gradient-text">untuk Email Profesional</span>
+            <span className="bg-gradient-to-r from-[#F47920] to-[#FF9A4A] bg-clip-text text-transparent">untuk Email Profesional</span>
           </motion.h2>
           <motion.p
             initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
             transition={{ delay: 0.15 }}
-            style={{ color: 'var(--text-secondary)', fontSize: '1rem', lineHeight: 1.7, maxWidth: '38rem', margin: '0 auto' }}
+            className="text-slate-600 text-base leading-relaxed max-w-2xl mx-auto"
           >
             Dari deliverability hingga analytics, RealSend hadir dengan fitur enterprise
             yang bisa diakses oleh semua kalangan developer.
@@ -54,7 +54,7 @@ export default function FeaturesSection() {
         {/* Grid */}
         <motion.div
           ref={ref}
-          className="rs-grid-3"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
           transition={{ duration: 0.5 }}
@@ -62,19 +62,19 @@ export default function FeaturesSection() {
           {features.map((f, i) => (
             <motion.div
               key={f.title}
-              className="rs-card"
+              className="bg-white border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.02)] rounded-2xl p-6 transition-all duration-300 hover:border-orange-500/22 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(15,23,42,0.06)]"
               initial={{ opacity: 0 }}
               animate={inView ? { opacity: 1 } : {}}
               transition={{ delay: i * 0.06 }}
             >
               <div
-                className="rs-icon-box"
+                className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 border mb-4"
                 style={{ background: f.bg, borderColor: f.br }}
               >
                 <f.icon size={18} color={f.clr} />
               </div>
-              <h3 style={{ fontSize: '0.9375rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>{f.title}</h3>
-              <p style={{ fontSize: '0.8375rem', color: 'var(--text-secondary)', lineHeight: 1.65 }}>{f.desc}</p>
+              <h3 className="text-[0.9375rem] font-bold text-slate-800 mb-2">{f.title}</h3>
+              <p className="text-[0.8375rem] text-slate-600 leading-relaxed">{f.desc}</p>
             </motion.div>
           ))}
         </motion.div>

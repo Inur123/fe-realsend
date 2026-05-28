@@ -10,7 +10,6 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent } from "@/components/ui/card";
 import { 
-  SparklesIcon, 
   CheckIcon, 
   Loader2Icon,
   ArrowLeftIcon
@@ -185,12 +184,11 @@ export default function PlanForm({ editingId, initialData }: PlanFormProps) {
           <ArrowLeftIcon className="h-5 w-5" />
         </Link>
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-            <SparklesIcon className="h-7 w-7 text-orange-500" />
-            {editingId ? "Ubah Konfigurasi Paket" : "Buat Paket Langganan Baru"}
+          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+            {editingId ? "Ubah Paket" : "Buat Paket"}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 mt-1">
-            Ubah parameter pricing dan limitasi server email. Live preview di sisi kanan memperbarui secara instan.
+            Atur pricing dan limit server email. Preview di kanan ikut berubah otomatis.
           </p>
         </div>
       </div>

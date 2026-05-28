@@ -125,8 +125,8 @@ export default function AuditLogDetailPage() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 min-w-0">
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0 w-full md:w-auto">
           <Button
             variant="outline"
             size="icon"
@@ -135,12 +135,14 @@ export default function AuditLogDetailPage() {
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-              <ShieldAlertIcon className="h-7 w-7 text-orange-500" />
-              {log.action}
+          <div className="min-w-0 flex-1">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white break-all">
+              Detail Audit Log
             </h1>
-            <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm">
+            <p className="text-slate-500 dark:text-slate-400 mt-1 text-xs sm:text-sm break-all">
+              {log.action}
+            </p>
+            <p className="text-slate-400 dark:text-slate-500 mt-0.5 text-[11px] sm:text-xs break-all">
               Log ID: {log.id}
             </p>
           </div>

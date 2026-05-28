@@ -16,19 +16,19 @@ const Toaster = ({ ...props }: ToasterProps) => {
       closeButton
       icons={{
         success: (
-          <CircleCheckIcon className="size-4 shrink-0 text-emerald-600" />
+          <CircleCheckIcon className="size-4 shrink-0 text-[#F47920]" />
         ),
         info: (
-          <InfoIcon className="size-4 shrink-0 text-blue-600" />
+          <InfoIcon className="size-4 shrink-0 text-[#F47920]" />
         ),
         warning: (
-          <TriangleAlertIcon className="size-4 shrink-0 text-amber-600" />
+          <TriangleAlertIcon className="size-4 shrink-0 text-[#F47920]" />
         ),
         error: (
-          <OctagonXIcon className="size-4 shrink-0 text-rose-600" />
+          <OctagonXIcon className="size-4 shrink-0 text-[#F47920]" />
         ),
         loading: (
-          <Loader2Icon className="size-4 animate-spin shrink-0 text-slate-600" />
+          <Loader2Icon className="size-4 animate-spin shrink-0 text-[#F47920]" />
         ),
       }}
       style={
@@ -41,14 +41,14 @@ const Toaster = ({ ...props }: ToasterProps) => {
       }
       toastOptions={{
         classNames: {
-          toast: "group toast group-[.toaster]:bg-white group-[.toaster]:text-slate-900 group-[.toaster]:border-slate-200 group-[.toaster]:shadow-[0_12px_38px_rgba(15,23,42,0.12)] rounded-xl border p-4 flex gap-3 items-start",
-          title: "font-semibold text-sm text-slate-900! group-[.toast-error-variant]:text-rose-950! group-[.toast-success-variant]:text-emerald-950! group-[.toast-warning-variant]:text-amber-955! group-[.toast-info-variant]:text-blue-955!",
-          description: "text-xs text-slate-500! group-[.toast-error-variant]:text-rose-800/90! group-[.toast-success-variant]:text-emerald-800/90! group-[.toast-warning-variant]:text-amber-800/90! group-[.toast-info-variant]:text-blue-800/90! font-medium leading-relaxed mt-0.5",
-          success: "group-[.toaster]:bg-emerald-50/95! group-[.toaster]:border-emerald-200! group-[.toaster]:text-emerald-900! toast-success-variant",
-          error: "group-[.toaster]:bg-rose-50/95! group-[.toaster]:border-rose-200! group-[.toaster]:text-rose-900! toast-error-variant",
-          info: "group-[.toaster]:bg-blue-50/95! group-[.toaster]:border-blue-200! group-[.toaster]:text-blue-900! toast-info-variant",
-          warning: "group-[.toaster]:bg-amber-50/95! group-[.toaster]:border-amber-200! group-[.toaster]:text-amber-900! toast-warning-variant",
-          closeButton: "group-[.toast]:bg-transparent group-[.toast]:text-slate-400 hover:group-[.toast]:text-slate-700 hover:group-[.toast]:bg-black/5 group-[.toast]:border-none group-[.toast]:shadow-none dark:hover:group-[.toast]:bg-white/10 group-[.toast]:right-2 group-[.toast]:top-2 group-[.toast]:left-auto",
+          toast: "group toast group-[.toaster]:bg-white group-[.toaster]:text-slate-900 group-[.toaster]:border-[#F47920]/60 group-[.toaster]:shadow-[0_12px_38px_rgba(15,23,42,0.12)] rounded-xl border p-4 flex gap-3 items-start",
+          title: "font-semibold text-sm text-[#F47920]!",
+          description: "text-xs text-[#F47920]/80! font-medium leading-relaxed mt-0.5",
+          success: "group-[.toaster]:bg-white! group-[.toaster]:border-[#F47920]/80! group-[.toaster]:text-[#F47920]! toast-success-variant",
+          error: "group-[.toaster]:bg-white! group-[.toaster]:border-[#F47920]/80! group-[.toaster]:text-[#F47920]! toast-error-variant",
+          info: "group-[.toaster]:bg-white! group-[.toaster]:border-[#F47920]/80! group-[.toaster]:text-[#F47920]! toast-info-variant",
+          warning: "group-[.toaster]:bg-white! group-[.toaster]:border-[#F47920]/80! group-[.toaster]:text-[#F47920]! toast-warning-variant",
+          closeButton: "group-[.toast]:bg-white! group-[.toast]:text-[#F47920]! group-[.toast]:border-[#F47920]! group-[.toast]:border! group-[.toast]:shadow-none hover:group-[.toast]:bg-[#F47920]/10 hover:group-[.toast]:text-[#F47920]! group-[.toast]:right-2 group-[.toast]:top-2 group-[.toast]:left-auto",
         },
       }}
       {...props}

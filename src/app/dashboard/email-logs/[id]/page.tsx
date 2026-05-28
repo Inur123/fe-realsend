@@ -17,7 +17,6 @@ import {
   XCircle,
   Eye,
   MousePointer,
-  Info,
 } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
 
@@ -53,23 +52,21 @@ export default function EmailLogDetailPage() {
   }, [id, fetchLogDetails]);
 
   const getStatusBadge = (logStatus: string) => {
-    const badges: Record<string, { class: string; icon: any }> = {
-      queued: { class: "bg-blue-50 text-blue-700 dark:bg-blue-950/20 dark:text-blue-400 border-blue-200", icon: Clock },
-      processing: { class: "bg-amber-50 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400 border-amber-200", icon: Clock },
-      sent: { class: "bg-orange-50 text-orange-700 dark:bg-orange-950/20 dark:text-orange-400 border-orange-200", icon: Send },
-      delivered: { class: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 border-emerald-200", icon: CheckCircle2 },
-      bounced: { class: "bg-red-50 text-red-700 dark:bg-red-950/20 dark:text-red-400 border-red-200", icon: AlertTriangle },
-      failed: { class: "bg-red-50 text-red-700 dark:bg-red-950/20 dark:text-red-400 border-red-200", icon: XCircle },
-      opened: { class: "bg-orange-50 text-orange-700 dark:bg-orange-950/20 dark:text-orange-400 border-orange-200", icon: Eye },
-      clicked: { class: "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/20 dark:text-indigo-400 border-indigo-200", icon: MousePointer },
+    const badges: Record<string, string> = {
+      queued: "bg-blue-50 text-blue-700 dark:bg-blue-950/20 dark:text-blue-400 border-blue-200",
+      processing: "bg-amber-50 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400 border-amber-200",
+      sent: "bg-orange-50 text-orange-700 dark:bg-orange-950/20 dark:text-orange-400 border-orange-200",
+      delivered: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 border-emerald-200",
+      bounced: "bg-red-50 text-red-700 dark:bg-red-950/20 dark:text-red-400 border-red-200",
+      failed: "bg-red-50 text-red-700 dark:bg-red-950/20 dark:text-red-400 border-red-200",
+      opened: "bg-orange-50 text-orange-700 dark:bg-orange-950/20 dark:text-orange-400 border-orange-200",
+      clicked: "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/20 dark:text-indigo-400 border-indigo-200",
     };
 
-    const b = badges[logStatus] || { class: "bg-slate-50 text-slate-700 dark:bg-slate-900 dark:text-slate-400 border-slate-200", icon: Info };
-    const Icon = b.icon;
+    const badgeClass = badges[logStatus] || "bg-slate-50 text-slate-700 dark:bg-slate-900 dark:text-slate-400 border-slate-200";
 
     return (
-      <span className={`inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full border uppercase tracking-wider ${b.class}`}>
-        <Icon className="h-3.5 w-3.5" />
+      <span className={`inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full border uppercase tracking-wider ${badgeClass}`}>
         {logStatus}
       </span>
     );
@@ -134,8 +131,8 @@ export default function EmailLogDetailPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 min-w-0">
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0 w-full md:w-auto">
           <Button
             variant="outline"
             size="icon"
@@ -144,11 +141,11 @@ export default function EmailLogDetailPage() {
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <div>
-            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
               Detail Log Pengiriman
             </h1>
-            <p className="text-slate-500 dark:text-slate-400 mt-1 text-xs md:text-sm font-mono truncate max-w-md md:max-w-xl">
+            <p className="text-slate-500 dark:text-slate-400 mt-1 text-xs sm:text-sm font-mono break-all">
               ID: {log.id}
             </p>
           </div>

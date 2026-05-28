@@ -18,7 +18,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useConfirm } from "@/hooks/use-confirm";
 import { toast } from "sonner";
 import {
-  Key,
   Loader2,
   Copy,
   Check,
@@ -35,9 +34,16 @@ import {
 } from "lucide-react";
 
 export default function ApiKeyDetailPage() {
-  const { id } = useParams() as { id: string };
+  const { id: routeId } = useParams() as { id: string };
+  const [currentId, setCurrentId] = useState(routeId);
+  const [prevRouteId, setPrevRouteId] = useState(routeId);
   const router = useRouter();
   const [ConfirmDialog, confirm] = useConfirm();
+
+  if (routeId !== prevRouteId) {
+    setPrevRouteId(routeId);
+    setCurrentId(routeId);
+  }
 
   const [key, setKey] = useState<any>(null);
   const [domain, setDomain] = useState<any>(null);
@@ -50,39 +56,49 @@ export default function ApiKeyDetailPage() {
   const [secretCopied, setSecretCopied] = useState(false);
   const [regenerating, setRegenerating] = useState(false);
 
-  const fetchKeyDetails = React.useCallback(async (silent = false) => {
-    if (!silent) setLoading(true);
-    try {
-      let data = null;
+
+  const fetchKeyDetails = React.useCallback(
+    async (silent = false) => {
+      if (!silent) setLoading(true);
       try {
-        data = await api.apiKeys.get(id);
-      } catch {
-        const keys = await api.apiKeys.list();
-        data = keys.find((item: any) => item.id === id) || null;
-      }
-
-      setKey(data);
-
-      if (data?.domain_id_str) {
+        let data = null;
         try {
-          const dom = await api.domains.get(data.domain_id_str);
-          setDomain(dom?.domain || null);
+          data = await api.apiKeys.get(currentId);
         } catch {
+          const keys = await api.apiKeys.list();
+          data = keys.find((item: any) => item.id === currentId) || null;
+        }
+
+        setKey(data);
+
+        if (data?.domain_id_str) {
+          try {
+            const dom = await api.domains.get(data.domain_id_str);
+            setDomain(dom?.domain || null);
+          } catch {
+            setDomain(null);
+          }
+        } else {
           setDomain(null);
         }
-      } else {
-        setDomain(null);
+      } catch (err: any) {
+        toast.error("Gagal memuat detail API Key", {
+          description: err.message,
+        });
+      } finally {
+        setLoading(false);
       }
-    } catch (err: any) {
-      toast.error("Gagal memuat detail API Key", { description: err.message });
-    } finally {
-      setLoading(false);
-    }
-  }, [id]);
+    },
+    [currentId],
+  );
 
   useEffect(() => {
     let active = true;
-    if (id) {
+    if (currentId) {
+      // Avoid loading fetch if key details are already populated for the currentId
+      if (key && key.id === currentId) {
+        return;
+      }
       const timer = setTimeout(() => {
         if (active) fetchKeyDetails();
       }, 0);
@@ -91,7 +107,7 @@ export default function ApiKeyDetailPage() {
         clearTimeout(timer);
       };
     }
-  }, [id, fetchKeyDetails]);
+  }, [currentId, key, fetchKeyDetails]);
 
   const handleRevoke = async () => {
     if (!key) return;
@@ -99,13 +115,13 @@ export default function ApiKeyDetailPage() {
       "Cabut API Key?",
       `Apakah Anda yakin ingin mencabut API Key "${key.name}"? Aplikasi yang memakai key ini akan langsung kehilangan akses.`,
       "destructive",
-      "Cabut"
+      "Cabut",
     );
     if (!confirmed) return;
 
     setRevoking(true);
     try {
-      await api.apiKeys.revoke(id);
+      await api.apiKeys.revoke(currentId);
       toast.success("API Key berhasil dicabut");
       router.push("/dashboard/api-keys");
     } catch (err: any) {
@@ -128,14 +144,14 @@ export default function ApiKeyDetailPage() {
       "Regenerate API Key Secret?",
       `Ini akan mencabut API Key "${key.name}" yang lama dan membuat secret baru. Aplikasi yang menggunakan key lama akan langsung kehilangan akses.`,
       "destructive",
-      "Ya, Regenerate"
+      "Ya, Regenerate",
     );
     if (!confirmed) return;
 
     setRegenerating(true);
     try {
       // Revoke old key
-      await api.apiKeys.revoke(id);
+      await api.apiKeys.revoke(currentId);
       // Create new key with same name
       const res = await api.apiKeys.create(key.name);
       const secret = res?.data?.token;
@@ -146,10 +162,17 @@ export default function ApiKeyDetailPage() {
       setCreatedKey(secret);
       setIsSecretOpen(true);
       toast.success("API Key Secret berhasil di-regenerate!");
-      // Navigate to new key detail
+
       const newKeyId = res?.data?.metadata?.id;
       if (newKeyId) {
-        router.replace(`/dashboard/api-keys/${newKeyId}`);
+        setCurrentId(newKeyId);
+        setKey(res.data.metadata);
+        setDomain(null);
+        window.history.replaceState(
+          null,
+          "",
+          `/dashboard/api-keys/${newKeyId}`,
+        );
       }
     } catch (err: any) {
       toast.error("Gagal regenerate secret", { description: err.message });
@@ -196,8 +219,8 @@ export default function ApiKeyDetailPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 min-w-0">
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0 w-full md:w-auto">
           <Button
             variant="outline"
             size="icon"
@@ -206,12 +229,11 @@ export default function ApiKeyDetailPage() {
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-              <Key className="h-7 w-7 text-orange-500" />
+          <div className="min-w-0 flex-1">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white break-all">
               {key.name}
             </h1>
-            <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm">
+            <p className="text-slate-500 dark:text-slate-400 mt-1 text-xs sm:text-sm break-all">
               ID: {key.id}
             </p>
           </div>
@@ -220,12 +242,10 @@ export default function ApiKeyDetailPage() {
         <div className="flex items-center gap-2 self-start md:self-center">
           {isActive ? (
             <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/20 px-2.5 py-1 rounded-full border border-emerald-200 uppercase tracking-wider">
-              <ShieldCheck className="h-3.5 w-3.5" />
               Active
             </span>
           ) : (
             <span className="inline-flex items-center gap-1 text-[10px] font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 px-2.5 py-1 rounded-full border border-slate-200 dark:border-slate-800 uppercase tracking-wider">
-              <Trash2 className="h-3.5 w-3.5" />
               Revoked
             </span>
           )}
@@ -238,7 +258,11 @@ export default function ApiKeyDetailPage() {
             aria-label="Cabut API Key"
             className="border-slate-200 text-red-500 hover:bg-red-50 hover:text-red-600 dark:border-slate-800 dark:hover:bg-red-950/30 h-9 w-9 rounded-lg cursor-pointer"
           >
-            {revoking ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+            {revoking ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Trash2 className="h-4 w-4" />
+            )}
           </Button>
         </div>
       </div>
@@ -249,9 +273,12 @@ export default function ApiKeyDetailPage() {
             <div className="bg-emerald-50/50 dark:bg-emerald-950/10 border border-emerald-500/20 rounded-xl p-4 flex items-start gap-3">
               <ShieldCheck className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
               <div>
-                <h4 className="text-sm font-bold text-emerald-800 dark:text-emerald-400">API Key Aktif</h4>
+                <h4 className="text-sm font-bold text-emerald-800 dark:text-emerald-400">
+                  API Key Aktif
+                </h4>
                 <p className="text-xs text-emerald-600 dark:text-emerald-500 mt-0.5 leading-relaxed">
-                  Key ini masih dapat digunakan untuk mengirim email melalui API.
+                  Key ini masih dapat digunakan untuk mengirim email melalui
+                  API.
                 </p>
               </div>
             </div>
@@ -259,7 +286,9 @@ export default function ApiKeyDetailPage() {
             <div className="bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-xl p-4 flex items-start gap-3">
               <Trash2 className="h-5 w-5 text-slate-500 shrink-0 mt-0.5" />
               <div>
-                <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300">API Key Dicabut</h4>
+                <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                  API Key Dicabut
+                </h4>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
                   Key ini sudah tidak bisa lagi digunakan oleh aplikasi Anda.
                 </p>
@@ -270,8 +299,12 @@ export default function ApiKeyDetailPage() {
           {/* ── API Key Secret ─────────────────────────────── */}
           <div className="space-y-2 border border-slate-100 dark:border-slate-900 rounded-xl p-4 bg-slate-50/50 dark:bg-slate-900/50">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-bold text-slate-700 dark:text-slate-300">API Key Secret</span>
-              <span className="text-[10px] text-slate-400 uppercase font-mono tracking-wider">Hidden</span>
+              <span className="font-bold text-slate-700 dark:text-slate-300">
+                API Key Secret
+              </span>
+              <span className="text-[10px] text-slate-400 uppercase font-mono tracking-wider">
+                Hidden
+              </span>
             </div>
             <div className="flex gap-2 items-center bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2.5 min-h-[40px]">
               <code className="text-xs font-mono text-slate-500 dark:text-slate-400 break-all flex-1 select-none">
@@ -296,7 +329,9 @@ export default function ApiKeyDetailPage() {
               </Button>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Secret penuh hanya muncul saat API Key pertama kali dibuat atau di-regenerate. Klik <strong>Regenerate Secret</strong> jika Anda lupa atau perlu memperbarui secret.
+              Secret penuh hanya muncul saat API Key pertama kali dibuat atau
+              di-regenerate. Klik <strong>Regenerate Secret</strong> jika Anda
+              lupa atau perlu memperbarui secret.
             </p>
           </div>
 
@@ -305,8 +340,12 @@ export default function ApiKeyDetailPage() {
             {/* Binding Domain */}
             <div className="space-y-2 border border-slate-100 dark:border-slate-900 rounded-xl p-4 bg-slate-50/50 dark:bg-slate-900/50">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-slate-700 dark:text-slate-300">Binding Domain</span>
-                <span className="text-[10px] text-slate-400 uppercase font-mono tracking-wider">Optional</span>
+                <span className="font-bold text-slate-700 dark:text-slate-300">
+                  Binding Domain
+                </span>
+                <span className="text-[10px] text-slate-400 uppercase font-mono tracking-wider">
+                  Optional
+                </span>
               </div>
               <div className="flex gap-2 items-center bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 h-10">
                 <code className="text-xs font-mono text-slate-800 dark:text-slate-200 break-all flex-1 select-all">
@@ -324,15 +363,25 @@ export default function ApiKeyDetailPage() {
                       onClick={() => setShowDomainId(!showDomainId)}
                       className="h-8 w-8 shrink-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
                     >
-                      {showDomainId ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showDomainId ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => copyToClipboard(key.domain_id_str, "domain")}
+                      onClick={() =>
+                        copyToClipboard(key.domain_id_str, "domain")
+                      }
                       className="h-8 w-8 shrink-0 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
                     >
-                      {copiedField === "domain" ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
+                      {copiedField === "domain" ? (
+                        <Check className="h-4 w-4 text-emerald-500" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
                     </Button>
                   </>
                 )}
@@ -348,8 +397,12 @@ export default function ApiKeyDetailPage() {
             {/* Created At */}
             <div className="space-y-2 border border-slate-100 dark:border-slate-900 rounded-xl p-4 bg-slate-50/50 dark:bg-slate-900/50">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-slate-700 dark:text-slate-300">Created At</span>
-                <span className="text-[10px] text-slate-400 uppercase font-mono tracking-wider">Timestamp</span>
+                <span className="font-bold text-slate-700 dark:text-slate-300">
+                  Created At
+                </span>
+                <span className="text-[10px] text-slate-400 uppercase font-mono tracking-wider">
+                  Timestamp
+                </span>
               </div>
               <div className="flex gap-2 items-center bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 h-10">
                 <code className="text-xs font-mono text-slate-800 dark:text-slate-200 break-all flex-1 select-all">
@@ -362,8 +415,12 @@ export default function ApiKeyDetailPage() {
           {/* ── Scopes ─────────────────────────────────────── */}
           <div className="space-y-2 border border-slate-100 dark:border-slate-900 rounded-xl p-4 bg-slate-50/50 dark:bg-slate-900/50">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-bold text-slate-700 dark:text-slate-300">Scopes</span>
-              <span className="text-[10px] text-slate-400 uppercase font-mono tracking-wider">Permissions</span>
+              <span className="font-bold text-slate-700 dark:text-slate-300">
+                Scopes
+              </span>
+              <span className="text-[10px] text-slate-400 uppercase font-mono tracking-wider">
+                Permissions
+              </span>
             </div>
             <div className="flex flex-wrap gap-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2.5 min-h-[40px]">
               {(key.scopes || []).length > 0 ? (
@@ -377,7 +434,9 @@ export default function ApiKeyDetailPage() {
                   </span>
                 ))
               ) : (
-                <span className="text-xs text-slate-400 font-mono">Tidak ada scope</span>
+                <span className="text-xs text-slate-400 font-mono">
+                  Tidak ada scope
+                </span>
               )}
             </div>
           </div>
@@ -386,8 +445,12 @@ export default function ApiKeyDetailPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div className="space-y-2 border border-slate-100 dark:border-slate-900 rounded-xl p-4 bg-slate-50/50 dark:bg-slate-900/50">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-slate-700 dark:text-slate-300">Last Used</span>
-                <span className="text-[10px] text-slate-400 uppercase font-mono tracking-wider">Activity</span>
+                <span className="font-bold text-slate-700 dark:text-slate-300">
+                  Last Used
+                </span>
+                <span className="text-[10px] text-slate-400 uppercase font-mono tracking-wider">
+                  Activity
+                </span>
               </div>
               <div className="flex items-center bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2.5 min-h-[40px]">
                 <code className="text-xs font-mono text-slate-800 dark:text-slate-200 flex-1">
@@ -397,8 +460,12 @@ export default function ApiKeyDetailPage() {
             </div>
             <div className="space-y-2 border border-slate-100 dark:border-slate-900 rounded-xl p-4 bg-slate-50/50 dark:bg-slate-900/50">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-slate-700 dark:text-slate-300">Expires At</span>
-                <span className="text-[10px] text-slate-400 uppercase font-mono tracking-wider">Validity</span>
+                <span className="font-bold text-slate-700 dark:text-slate-300">
+                  Expires At
+                </span>
+                <span className="text-[10px] text-slate-400 uppercase font-mono tracking-wider">
+                  Validity
+                </span>
               </div>
               <div className="flex items-center bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2.5 min-h-[40px]">
                 <code className="text-xs font-mono text-slate-800 dark:text-slate-200 flex-1">
@@ -411,19 +478,20 @@ export default function ApiKeyDetailPage() {
           {/* ── Footer Status ────────────────────────────────── */}
           <div className="flex items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-900 text-xs text-slate-500">
             <Clock className="h-3.5 w-3.5 shrink-0" />
-            {isActive ? "API Key aktif dan siap dipakai." : "API Key ini sudah dicabut."}
+            {isActive
+              ? "API Key aktif dan siap dipakai."
+              : "API Key ini sudah dicabut."}
           </div>
         </CardContent>
       </Card>
 
-
       <Dialog
         open={isSecretOpen}
         onOpenChange={(open) => {
+          setIsSecretOpen(open);
           if (!open) {
             setCreatedKey(null);
           }
-          setIsSecretOpen(open);
         }}
       >
         <DialogContent className="sm:max-w-[500px]">
@@ -431,9 +499,12 @@ export default function ApiKeyDetailPage() {
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-100 text-orange-600 mb-4 mx-auto">
               <ShieldCheck className="h-6 w-6" />
             </div>
-            <DialogTitle className="text-xl font-bold text-center">Simpan API Key Anda</DialogTitle>
+            <DialogTitle className="text-xl font-bold text-center">
+              Simpan API Key Anda
+            </DialogTitle>
             <DialogDescription className="text-center text-slate-500">
-              Salin kunci ini sekarang. Untuk alasan keamanan, kami tidak akan menampilkan API Key ini kembali setelah dialog ditutup.
+              Salin kunci ini sekarang. Untuk alasan keamanan, kami tidak akan
+              menampilkan API Key ini kembali setelah dialog ditutup.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 my-4 p-4 border border-orange-200/50 bg-orange-50/20 rounded-2xl">
@@ -447,13 +518,18 @@ export default function ApiKeyDetailPage() {
                 size="icon"
                 className="h-9 w-9 text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-lg shrink-0"
               >
-                {secretCopied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
+                {secretCopied ? (
+                  <Check className="h-4 w-4 text-emerald-500" />
+                ) : (
+                  <Copy className="h-4 w-4" />
+                )}
               </Button>
             </div>
             <div className="flex gap-2 text-xs text-orange-700 dark:text-orange-400">
               <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
               <span>
-                Jaga kerahasiaan kunci ini. Siapapun yang memiliki key ini dapat mengirim email atas nama domain terverifikasi Anda.
+                Jaga kerahasiaan kunci ini. Siapapun yang memiliki key ini dapat
+                mengirim email atas nama domain terverifikasi Anda.
               </span>
             </div>
           </div>
