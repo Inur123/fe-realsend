@@ -232,6 +232,35 @@ export const api = {
     domains: () => apiFetch<any[]>(`/analytics/domains`),
   },
 
+  // Billing
+  billing: {
+    current: () => apiFetch<any>("/billing/current"),
+    invoices: (params?: { page?: number; per_page?: number }) => {
+      const query = new URLSearchParams();
+      if (params) {
+        Object.entries(params).forEach(([key, val]) => {
+          if (val !== undefined && String(val) !== "") {
+            query.set(key, String(val));
+          }
+        });
+      }
+      const queryString = query.toString();
+      return apiFetch<{ data: any[]; meta: any }>(`/billing/invoices?${queryString}`, { includeMeta: true }).then((res) => ({
+        invoices: res.data || [],
+        total: res.meta?.total || 0,
+      }));
+    },
+    checkout: (payload: { plan_id: string; billing_cycle?: string }) =>
+      apiFetch<any>("/billing/checkout", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      }),
+    sync: (orderId: string) =>
+      apiFetch<any>(`/billing/sync/${encodeURIComponent(orderId)}`, {
+        method: "POST",
+      }),
+  },
+
   // Admin Operations
   admin: {
     listUsers: (params?: { page?: number; per_page?: number; search?: string }) => {

@@ -58,6 +58,7 @@ export default function Navbar() {
             height={32}
             className="h-8 w-auto object-contain"
             priority
+            style={{ width: 'auto' }}
           />
           <Image
             src="/images/text-realsend.png"
@@ -66,6 +67,7 @@ export default function Navbar() {
             height={30}
             className="h-7 w-auto object-contain"
             priority
+            style={{ width: 'auto' }}
           />
         </button>
 

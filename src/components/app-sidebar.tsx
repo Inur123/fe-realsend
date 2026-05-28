@@ -82,7 +82,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         { title: "Keamanan & Password", url: "/dashboard/settings/security" },
       ],
     },
-    { title: "Subscription & Billing", url: "/dashboard/billing", icon: CreditCard },
+    { title: "Subscription Plan", url: "/dashboard/subscription", icon: CreditCard },
+    { title: "Billing & Invoices", url: "/dashboard/billing", icon: FileText },
   ]
 
   // Admin Dashboard navigation sections

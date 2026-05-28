@@ -66,6 +66,7 @@ export function TeamSwitcher({
                     height={32}
                     priority
                     className="h-8 w-auto object-contain shrink-0"
+                    style={{ width: "auto" }}
                   />
                   <Image
                     src="/images/text-realsend.png"
@@ -74,6 +75,7 @@ export function TeamSwitcher({
                     height={24}
                     priority
                     className="h-6 w-auto object-contain dark:invert shrink-0"
+                    style={{ width: "auto" }}
                   />
                 </div>
                 {/* Collapsed: show only Icon */}

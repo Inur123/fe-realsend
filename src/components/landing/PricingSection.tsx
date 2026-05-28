@@ -123,7 +123,7 @@ export default function PricingSection() {
           </span>
           <h2 className="text-[clamp(1.75rem,4vw,3rem)] font-extrabold leading-tight text-slate-800 mb-5">
             Pilih Paket{" "}
-            <span className="bg-gradient-to-r from-[#F47920] to-[#FF9A4A] bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-[#F47920] to-[#FF9A4A] bg-clip-text text-transparent">
               yang Tepat
             </span>
           </h2>
@@ -199,7 +199,7 @@ export default function PricingSection() {
                   transition={{ delay: i * 0.1 }}
                   className={`relative flex flex-col rounded-2xl overflow-visible border transition-all duration-300 ${
                     featured
-                      ? "border-[#F47920]/42 bg-gradient-to-br from-white to-orange-50 shadow-[0_12px_40px_rgba(244,121,32,0.08)] hover:-translate-y-1 hover:shadow-lg"
+                      ? "border-[#F47920]/42 bg-linear-to-br from-white to-orange-50 shadow-[0_12px_40px_rgba(244,121,32,0.08)] hover:-translate-y-1 hover:shadow-lg"
                       : "border-slate-200 bg-white shadow-[0_4px_20px_rgba(15,23,42,0.02)] hover:-translate-y-1 hover:shadow-md hover:border-orange-500/22"
                   }`}
                 >
@@ -333,7 +333,7 @@ export default function PricingSection() {
                       onClick={() => router.push("/register")}
                       className={`w-full block text-center rounded-lg text-sm mt-2 transition-all duration-200 cursor-pointer outline-none ${
                         featured
-                          ? "px-6 py-3 font-bold text-white bg-gradient-to-br from-[#F47920] to-[#D4661A] hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(244,121,32,0.3)] border-0"
+                          ? "px-6 py-3 font-bold text-white bg-linear-to-br from-[#F47920] to-[#D4661A] hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(244,121,32,0.3)] border-0"
                           : "px-6 py-2.5 font-medium text-slate-600 border border-slate-200 bg-transparent hover:text-[#1B2B5B] hover:border-orange-500/40 hover:bg-orange-500/5 hover:-translate-y-0.5"
                       }`}
                     >

@@ -45,3 +45,29 @@ export function formatDateTime(dateInput?: string | Date | number | null) {
   }
 }
 
+/**
+ * Format date to Indonesian long format with time and WIB (e.g. 20 Oktober 2025 - 21:13 WIB)
+ */
+export function formatInvoiceDateTime(dateInput?: string | Date | number | null) {
+  if (!dateInput) return "-";
+  try {
+    const d = new Date(dateInput);
+    if (isNaN(d.getTime())) return "-";
+    
+    const months = [
+      "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+      "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+    ];
+    
+    const day = d.getDate();
+    const month = months[d.getMonth()];
+    const year = d.getFullYear();
+    const hours = String(d.getHours()).padStart(2, "0");
+    const minutes = String(d.getMinutes()).padStart(2, "0");
+    
+    return `${day} ${month} ${year} - ${hours}:${minutes} WIB`;
+  } catch {
+    return "-";
+  }
+}
+

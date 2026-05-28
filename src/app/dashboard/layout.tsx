@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { api } from "@/lib/api";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
   SidebarInset,
@@ -23,8 +24,9 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading, refreshUser } = useAuth();
   const router = useRouter();
+  const [planLimits, setPlanLimits] = useState(PLAN_FALLBACKS);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -32,8 +34,33 @@ export default function DashboardLayout({
     }
   }, [isLoading, isAuthenticated, router]);
 
-  // Plan limit is derived directly from fallback map — no extra API call needed.
-  // The user's plan_slug already comes from the AuthContext (set at login/refresh).
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    refreshUser();
+    const handleFocus = () => refreshUser();
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
+  }, [isAuthenticated, refreshUser]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    api.plans.list()
+      .then((plans) => {
+        const limits = plans.reduce((acc, plan) => {
+          acc[plan.slug] = {
+            daily_email_limit: plan.daily_email_limit,
+            name: plan.name,
+          };
+          return acc;
+        }, { ...PLAN_FALLBACKS } as typeof PLAN_FALLBACKS);
+        setPlanLimits(limits);
+      })
+      .catch(() => {
+        setPlanLimits(PLAN_FALLBACKS);
+      });
+  }, [isAuthenticated]);
 
   if (isLoading) {
     return (
@@ -50,8 +77,8 @@ export default function DashboardLayout({
   const sub = user?.subscription;
   const emailsSentToday = sub?.emails_sent_today || 0;
   const activePlanSlug = user?.plan_slug || "free";
-  const dailyQuota = PLAN_FALLBACKS[activePlanSlug]?.daily_email_limit ?? PLAN_FALLBACKS.free.daily_email_limit;
-  const quotaPercentage = Math.min((emailsSentToday / dailyQuota) * 100, 100);
+  const dailyQuota = planLimits[activePlanSlug]?.daily_email_limit ?? PLAN_FALLBACKS.free.daily_email_limit;
+  const quotaPercentage = dailyQuota === -1 ? 0 : Math.min((emailsSentToday / dailyQuota) * 100, 100);
 
   return (
     <SidebarProvider>
@@ -70,7 +97,7 @@ export default function DashboardLayout({
               <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
                 <span>Quota Harian:</span>
                 <span className="font-bold text-foreground">
-                  {emailsSentToday.toLocaleString()} / {dailyQuota.toLocaleString()}
+                  {emailsSentToday.toLocaleString()} / {dailyQuota === -1 ? "Unlimited" : dailyQuota.toLocaleString()}
                 </span>
               </div>
               <div className="w-36 h-1.5 bg-sidebar-accent rounded-full overflow-hidden">
@@ -85,7 +112,7 @@ export default function DashboardLayout({
             <div className="flex items-center gap-1.5 bg-linear-to-r from-orange-500/10 to-amber-500/10 border border-orange-500/20 text-orange-700 dark:text-orange-400 px-3 py-1 rounded-full text-xs font-bold shadow-sm select-none">
               <Sparkles className="h-3.5 w-3.5" />
               <span className="uppercase tracking-wider">
-                {user?.plan_name || PLAN_FALLBACKS[activePlanSlug]?.name || "Free Plan"}
+                {user?.plan_name || planLimits[activePlanSlug]?.name || "Free Plan"}
               </span>
             </div>
           </div>

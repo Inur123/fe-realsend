@@ -105,7 +105,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-gradient-to-b from-slate-100 to-slate-300 relative overflow-hidden">
+    <footer className="bg-linear-to-b from-slate-100 to-slate-300 relative overflow-hidden">
       
 
 
@@ -138,7 +138,7 @@ export default function Footer() {
       `}} />
 
       {/* Subtle bottom glow */}
-      <div className="absolute rounded-full blur-[100px] pointer-events-none w-[450px] h-[450px] bg-[#F47920]/3 -bottom-[200px] right-[5%]" />
+      <div className="absolute rounded-full blur-[100px] pointer-events-none w-[450px] h-[450px] bg-[#F47920]/3 bottom-[-200px] right-[5%]" />
 
       <div className="w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         
@@ -156,6 +156,7 @@ export default function Footer() {
                 width={32}
                 height={32}
                 className="h-8 w-auto object-contain"
+                style={{ width: 'auto' }}
               />
               <Image
                 src="/images/text-realsend.png"
@@ -163,6 +164,7 @@ export default function Footer() {
                 width={110}
                 height={30}
                 className="h-7 w-auto object-contain"
+                style={{ width: 'auto' }}
               />
             </button>
             <p className="text-sm text-slate-605 leading-relaxed m-0">

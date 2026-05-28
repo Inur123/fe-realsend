@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -143,15 +143,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.push("/login");
   };
 
-  const refreshUser = async () => {
+  const refreshUser = useCallback(async () => {
     try {
       const freshUser = await api.auth.me();
       setUser(freshUser);
       localStorage.setItem("realsend_user", JSON.stringify(freshUser));
+      localStorage.setItem("realsend_auth_ts", String(Date.now()));
     } catch {
       // Best-effort refresh; keep the current user state if the API is unavailable.
     }
-  };
+  }, []);
 
   return (
     <AuthContext.Provider
