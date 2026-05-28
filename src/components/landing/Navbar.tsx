@@ -9,7 +9,7 @@ const navLinks = [
   { label: 'Fitur', href: '#features' },
   { label: 'Cara Kerja', href: '#how-it-works' },
   { label: 'Harga', href: '#pricing' },
-  { label: 'Docs', href: '#docs' },
+  { label: 'Docs', href: '/docs' },
 ];
 
 export default function Navbar() {
@@ -35,6 +35,8 @@ export default function Navbar() {
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
       }
+    } else {
+      router.push(href);
     }
   };
 
