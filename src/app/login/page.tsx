@@ -13,28 +13,6 @@ export default function Page() {
       <div className="absolute bottom-1/4 right-1/4 h-[350px] w-[350px] rounded-full bg-blue-500/5 blur-[90px] mix-blend-multiply pointer-events-none animate-pulse" style={{ animationDuration: '12s' }} />
 
       <div className="relative w-full max-w-[440px] z-10 flex flex-col gap-6">
-        {/* Logo floating above card */}
-        <div className="flex justify-center mb-2">
-          <Link href="/" className="flex items-center gap-2 bg-transparent border-0 p-0 cursor-pointer shrink-0">
-            <Image
-              src="/images/logo-realsend.png"
-              alt="RealSend Logo Icon"
-              width={43}
-              height={32}
-              className="h-8 w-[43px] object-contain"
-              priority
-            />
-            <Image
-              src="/images/text-realsend.png"
-              alt="RealSend Logo Text"
-              width={117}
-              height={30}
-              className="h-[30px] w-[117px] object-contain"
-              priority
-            />
-          </Link>
-        </div>
-        
         <LoginForm />
       </div>
     </div>
