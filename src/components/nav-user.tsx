@@ -98,10 +98,10 @@ export function NavUser({
             <ChevronsUpDownIcon className="ml-auto size-4 text-slate-400 group-data-[collapsible=icon]:hidden" />
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-56 rounded-xl border border-slate-100 dark:border-slate-800 shadow-xl bg-white dark:bg-slate-950 p-1.5"
-            side={isMobile ? "bottom" : "right"}
-            align="end"
-            sideOffset={8}
+            className="w-64 sm:w-56 rounded-xl border border-slate-100 dark:border-slate-800 shadow-xl bg-white dark:bg-slate-950 p-1.5"
+            side={isMobile ? "top" : "right"}
+            align={isMobile ? "center" : "end"}
+            sideOffset={12}
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-3 px-2 py-2 text-left text-sm">

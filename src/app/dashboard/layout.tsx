@@ -53,6 +53,16 @@ export default function DashboardLayout({
       });
   }, [isAuthenticated]);
 
+  useEffect(() => {
+    // Lock root and body scrolling to prevent elastic bounce on macOS/iOS
+    document.documentElement.classList.add("overflow-hidden", "h-svh");
+    document.body.classList.add("overflow-hidden", "h-svh");
+    return () => {
+      document.documentElement.classList.remove("overflow-hidden", "h-svh");
+      document.body.classList.remove("overflow-hidden", "h-svh");
+    };
+  }, []);
+
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-white dark:bg-slate-950">
@@ -72,9 +82,9 @@ export default function DashboardLayout({
   const quotaPercentage = dailyQuota === -1 ? 0 : Math.min((emailsSentToday / dailyQuota) * 100, 100);
 
   return (
-    <SidebarProvider>
+    <SidebarProvider className="h-svh overflow-hidden">
       <AppSidebar />
-      <SidebarInset>
+      <SidebarInset className="flex flex-col h-full overflow-hidden">
         {/* Header — sticky: stays pinned while content scrolls */}
         <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between gap-2 border-b border-sidebar-border bg-background px-4 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2">
@@ -110,7 +120,7 @@ export default function DashboardLayout({
         </header>
 
         {/* Page Content */}
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0 overflow-y-auto overscroll-y-none">
           <div className="w-full px-2 py-4 md:px-4 md:py-6">
             {children}
           </div>
