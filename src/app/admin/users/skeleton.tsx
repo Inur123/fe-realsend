@@ -9,6 +9,23 @@ export function AdminUsersSkeleton() {
         <Skeleton className="h-4 w-[480px] max-w-full" />
       </div>
 
+      {/* Stat Cards */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+        {[...Array(5)].map((_, i) => (
+          <div
+            key={i}
+            className="rounded-xl border border-slate-100 bg-white p-6 shadow-xs dark:border-slate-800 dark:bg-slate-950"
+          >
+            <div className="flex items-center justify-between">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-4 w-4 rounded" />
+            </div>
+            <Skeleton className="mt-8 h-7 w-16" />
+            <Skeleton className="mt-3 h-3 w-28" />
+          </div>
+        ))}
+      </div>
+
       {/* Filter Bar */}
       <div className="flex w-full flex-wrap md:flex-nowrap items-end gap-4">
         <div className="space-y-1.5 flex-2 min-w-[280px]">

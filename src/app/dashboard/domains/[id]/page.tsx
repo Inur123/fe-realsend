@@ -6,8 +6,8 @@ import { useParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useConfirm } from "@/hooks/use-confirm";
+import { DomainDetailSkeleton } from "../skeleton";
 import { toast } from "sonner";
 import {
   Loader2,
@@ -104,21 +104,7 @@ export default function DomainDetailPage() {
   };
 
   if (loading) {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center gap-2">
-          <Skeleton className="h-4 w-32" />
-        </div>
-        <Card className="border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-md rounded-2xl p-6">
-          <div className="space-y-4">
-            <Skeleton className="h-10 w-1/3" />
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-24 w-full" />
-            <Skeleton className="h-24 w-full" />
-          </div>
-        </Card>
-      </div>
-    );
+    return <DomainDetailSkeleton />;
   }
 
   if (!domain) {
@@ -229,12 +215,12 @@ export default function DomainDetailPage() {
                   </div>
                   <div className="flex gap-2 items-center bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg p-2.5">
                     <code className="text-xs font-mono text-slate-800 dark:text-slate-200 break-all flex-1 select-all">
-                      {domain.spf_record || "v=spf1 include:spf.realsend.id ~all"}
+                      {domain.spf_record || "v=spf1 include:spf.realsend.web.id ~all"}
                     </code>
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => copyToClipboard(domain.spf_record || "v=spf1 include:spf.realsend.id ~all", "spf")}
+                      onClick={() => copyToClipboard(domain.spf_record || "v=spf1 include:spf.realsend.web.id ~all", "spf")}
                       className="h-8 w-8 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
                     >
                       {copiedField === "spf" ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
@@ -271,12 +257,12 @@ export default function DomainDetailPage() {
                   </div>
                   <div className="flex gap-2 items-center bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg p-2.5">
                     <code className="text-xs font-mono text-slate-800 dark:text-slate-200 break-all flex-1 select-all">
-                      {domain.dmarc_record || "v=DMARC1; p=none; rua=mailto:dmarc@realsend.id"}
+                      {domain.dmarc_record || "v=DMARC1; p=none; rua=mailto:dmarc@realsend.web.id"}
                     </code>
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => copyToClipboard(domain.dmarc_record || "v=DMARC1; p=none; rua=mailto:dmarc@realsend.id", "dmarc")}
+                      onClick={() => copyToClipboard(domain.dmarc_record || "v=DMARC1; p=none; rua=mailto:dmarc@realsend.web.id", "dmarc")}
                       className="h-8 w-8 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
                     >
                       {copiedField === "dmarc" ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
@@ -292,12 +278,12 @@ export default function DomainDetailPage() {
                   </div>
                   <div className="flex gap-2 items-center bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg p-2.5">
                     <code className="text-xs font-mono text-slate-800 dark:text-slate-200 break-all flex-1 select-all">
-                      {domain.return_path_cname || "return.realsend.id"}
+                      {domain.return_path_cname || "feedback.realsend.web.id"}
                     </code>
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => copyToClipboard(domain.return_path_cname || "return.realsend.id", "return_path")}
+                      onClick={() => copyToClipboard(domain.return_path_cname || "feedback.realsend.web.id", "return_path")}
                       className="h-8 w-8 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
                     >
                       {copiedField === "return_path" ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
@@ -327,11 +313,11 @@ export default function DomainDetailPage() {
                 <div className="space-y-1.5">
                   <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-450 tracking-wider">Host</span>
                   <div className="flex gap-2 items-center bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-lg p-2.5">
-                    <code className="text-xs font-mono text-slate-800 dark:text-slate-200 break-all flex-1 select-all">smtp.realsend.id</code>
+                    <code className="text-xs font-mono text-slate-800 dark:text-slate-200 break-all flex-1 select-all">smtp.realsend.web.id</code>
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => copyToClipboard("smtp.realsend.id", "smtp_host")}
+                      onClick={() => copyToClipboard("smtp.realsend.web.id", "smtp_host")}
                       className="h-8 w-8 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
                     >
                       {copiedField === "smtp_host" ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}

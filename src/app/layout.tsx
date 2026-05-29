@@ -32,12 +32,12 @@ export const metadata: Metadata = {
     'email API',
     'RealSend',
   ],
-  authors: [{ name: 'RealSend', url: 'https://realsend.id' }],
+  authors: [{ name: 'RealSend', url: 'https://realsend.web.id' }],
   creator: 'RealSend',
   openGraph: {
     title: 'RealSend — Authentic SMTP Delivery',
     description: 'Platform email transaksional profesional untuk developer & bisnis Indonesia.',
-    url: 'https://realsend.id',
+    url: 'https://realsend.web.id',
     siteName: 'RealSend',
     locale: 'id_ID',
     type: 'website',
@@ -51,6 +51,11 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  icons: {
+    icon: '/images/logo-realsend.png',
+    shortcut: '/images/logo-realsend.png',
+    apple: '/images/logo-realsend.png',
+  },
 };
 
 export default function RootLayout({
@@ -59,7 +64,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id" className={`light scroll-smooth ${inter.variable} ${plusJakartaSans.variable}`} suppressHydrationWarning>
+    <html
+      lang="id"
+      data-scroll-behavior="smooth"
+      className={`light scroll-smooth ${inter.variable} ${plusJakartaSans.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" type="image/png" href="/images/logo-realsend.png" />
@@ -73,4 +83,3 @@ export default function RootLayout({
     </html>
   );
 }
-

@@ -175,7 +175,7 @@ export default function DomainsPage() {
                 </Label>
                 <Input
                   id="domain_name"
-                  placeholder="realsend.id"
+                  placeholder="realsend.web.id"
                   value={newDomain}
                   onChange={(e) => setNewDomain(e.target.value)}
                   className="h-11 border-slate-200 focus:border-orange-500 focus:ring-orange-500/20 rounded-lg"

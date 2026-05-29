@@ -96,7 +96,6 @@ export default function BillingPage() {
   const [domainsCount, setDomainsCount] = useState(0);
   const [apiKeysCount, setApiKeysCount] = useState(0);
   const [overview, setOverview] = useState<BillingOverview | null>(null);
-  const [invoices, setInvoices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [yearly, setYearly] = useState(true);
 
@@ -119,38 +118,18 @@ export default function BillingPage() {
 
         if (payment === "success" && orderId && !handledPaymentStatus.current) {
           handledPaymentStatus.current = true;
-          toast.info("Mengecek pembayaran Midtrans", {
-            description: "Kami sedang menyinkronkan status transaksi terbaru.",
+          toast.info("Menunggu konfirmasi Midtrans", {
+            description:
+              "Status paket akan berubah otomatis saat webhook pembayaran diterima.",
           });
-          try {
-            const syncedPayment = await api.billing.sync(orderId);
-            if (syncedPayment?.status === "paid") {
-              toast.success("Pembayaran berhasil", {
-                description: "Paket kamu sudah aktif.",
-              });
-              await refreshUser();
-            } else if (syncedPayment?.status === "pending") {
-              toast.info("Pembayaran masih pending", {
-                description:
-                  "Selesaikan pembayaran di Midtrans, lalu kembali ke halaman ini.",
-              });
-            }
-          } catch (err: any) {
-            toast.warning("Belum bisa sinkron otomatis", {
-              description:
-                err?.message ||
-                "Webhook Midtrans atau simulator lokal masih bisa memproses pembayaran ini.",
-            });
-          }
         }
 
-        const [plansList, domainsList, keysList, billingOverview, invoiceList] =
+        const [plansList, domainsList, keysList, billingOverview] =
           await Promise.all([
             api.plans.list(),
             api.domains.list(),
             api.apiKeys.list(),
             api.billing.current(),
-            api.billing.invoices({ page: 1, per_page: 5 }),
           ]);
 
         const sortedPlans = (plansList || []).sort(
@@ -160,16 +139,13 @@ export default function BillingPage() {
         setDomainsCount(domainsList?.length || 0);
         setApiKeysCount(keysList?.length || 0);
         setOverview(billingOverview || null);
-        setInvoices(
-          invoiceList?.invoices || billingOverview?.recent_invoices || [],
-        );
       } catch (err: any) {
         toast.error("Gagal memuat data billing", { description: err.message });
       } finally {
         setLoading(false);
       }
     },
-    [refreshUser],
+    [],
   );
 
   useEffect(() => {
@@ -205,29 +181,6 @@ export default function BillingPage() {
       });
     }
   }, [loadBillingData, refreshUser]);
-
-  // Real-time polling when there is a pending invoice
-  useEffect(() => {
-    const pendingInvoice = invoices.find((inv: any) => inv.status === "pending");
-    if (!pendingInvoice) return;
-
-    const interval = setInterval(async () => {
-      try {
-        const syncedPayment = await api.billing.sync(pendingInvoice.external_id);
-        if (syncedPayment?.status === "paid") {
-          toast.success("Pembayaran berhasil disinkronkan", {
-            description: "Paket Anda telah aktif secara real-time!",
-          });
-          await refreshUser();
-          loadBillingData(true); // Silent reload
-        }
-      } catch {
-        // Fail silently during background polling
-      }
-    }, 5000); // Poll every 5 seconds
-
-    return () => clearInterval(interval);
-  }, [invoices, loadBillingData, refreshUser]);
 
   const handleCheckoutSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

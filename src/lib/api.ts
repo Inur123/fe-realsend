@@ -13,6 +13,10 @@ interface ApiError extends Error {
   payload?: unknown;
 }
 
+const PLAN_CACHE_TTL_MS = 5 * 60 * 1000;
+let plansCache: { data: any[]; expiresAt: number } | null = null;
+let plansRequest: Promise<any[]> | null = null;
+
 async function readResponseBody(response: Response) {
   const contentType = response.headers.get("content-type") || "";
   const rawBody = await response.text();
@@ -136,7 +140,26 @@ export const api = {
 
   // Plans
   plans: {
-    list: () => apiFetch<any[]>("/plans", { requiresAuth: false }),
+    list: () => {
+      const now = Date.now();
+      if (plansCache && plansCache.expiresAt > now) {
+        return Promise.resolve(plansCache.data);
+      }
+      if (plansRequest) {
+        return plansRequest;
+      }
+
+      plansRequest = apiFetch<any[]>("/plans", { requiresAuth: false })
+        .then((plans) => {
+          plansCache = { data: plans, expiresAt: Date.now() + PLAN_CACHE_TTL_MS };
+          return plans;
+        })
+        .finally(() => {
+          plansRequest = null;
+        });
+
+      return plansRequest;
+    },
     get: (id: string) => apiFetch<any>(`/plans/${id}`, { requiresAuth: false }),
   },
 
@@ -255,10 +278,6 @@ export const api = {
         method: "POST",
         body: JSON.stringify(payload),
       }),
-    sync: (orderId: string) =>
-      apiFetch<any>(`/billing/sync/${encodeURIComponent(orderId)}`, {
-        method: "POST",
-      }),
   },
 
   // Admin Operations
@@ -344,5 +363,24 @@ export const api = {
       apiFetch<any>(`/admin/plans/${id}`, {
         method: "DELETE",
       }),
+    getTransactions: (params?: { page?: number; per_page?: number; search?: string; status?: string }) => {
+      const query = new URLSearchParams();
+      if (params) {
+        Object.entries(params).forEach(([key, val]) => {
+          if (val !== undefined && String(val) !== "") {
+            query.set(key, String(val));
+          }
+        });
+      }
+      const queryString = query.toString();
+      return apiFetch<{ data: { transactions: any[]; stats: any }; meta: any }>(`/admin/transactions?${queryString}`, { includeMeta: true })
+        .then((res) => ({
+          transactions: res.data?.transactions || [],
+          stats: res.data?.stats || { total_volume_idr: 0, total_count: 0, paid_count: 0, pending_count: 0, failed_count: 0 },
+          total: res.meta?.total || 0,
+        }));
+    },
+    getTransaction: (id: string) =>
+      apiFetch<any>(`/admin/transactions/${id}`),
   },
 };

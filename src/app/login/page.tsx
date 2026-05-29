@@ -15,14 +15,22 @@ export default function Page() {
       <div className="relative w-full max-w-[440px] z-10 flex flex-col gap-6">
         {/* Logo floating above card */}
         <div className="flex justify-center mb-2">
-          <Link href="/">
+          <Link href="/" className="flex items-center gap-2 bg-transparent border-0 p-0 cursor-pointer shrink-0">
             <Image
-              src="/images/logo-text-realsend.png"
-              alt="RealSend Logo"
-              width={160}
-              height={40}
+              src="/images/logo-realsend.png"
+              alt="RealSend Logo Icon"
+              width={43}
+              height={32}
+              className="h-8 w-[43px] object-contain"
               priority
-              className="h-10 w-auto object-contain hover:opacity-90 transition-opacity"
+            />
+            <Image
+              src="/images/text-realsend.png"
+              alt="RealSend Logo Text"
+              width={117}
+              height={30}
+              className="h-[30px] w-[117px] object-contain"
+              priority
             />
           </Link>
         </div>
@@ -32,4 +40,3 @@ export default function Page() {
     </div>
   )
 }
-

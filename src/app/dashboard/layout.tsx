@@ -24,7 +24,7 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user, isAuthenticated, isLoading, refreshUser } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const [planLimits, setPlanLimits] = useState(PLAN_FALLBACKS);
 
@@ -33,15 +33,6 @@ export default function DashboardLayout({
       router.replace("/login");
     }
   }, [isLoading, isAuthenticated, router]);
-
-  useEffect(() => {
-    if (!isAuthenticated) return;
-
-    refreshUser();
-    const handleFocus = () => refreshUser();
-    window.addEventListener("focus", handleFocus);
-    return () => window.removeEventListener("focus", handleFocus);
-  }, [isAuthenticated, refreshUser]);
 
   useEffect(() => {
     if (!isAuthenticated) return;

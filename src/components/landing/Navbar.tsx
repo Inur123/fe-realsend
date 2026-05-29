@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Menu, X, Zap } from 'lucide-react';
+import { LayoutDashboard, Menu, X, Zap } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 const navLinks = [
   { label: 'Fitur', href: '#features' },
@@ -14,6 +15,7 @@ const navLinks = [
 
 export default function Navbar() {
   const router = useRouter();
+  const { isAuthenticated, isLoading } = useAuth();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -56,20 +58,18 @@ export default function Navbar() {
           <Image
             src="/images/logo-realsend.png"
             alt="RealSend Logo Icon"
-            width={32}
+            width={43}
             height={32}
-            className="h-8 w-auto object-contain"
+            className="h-8 w-[43px] object-contain"
             priority
-            style={{ width: 'auto' }}
           />
           <Image
             src="/images/text-realsend.png"
             alt="RealSend Logo Text"
-            width={110}
+            width={117}
             height={30}
-            className="h-7 w-auto object-contain"
+            className="h-[30px] w-[117px] object-contain"
             priority
-            style={{ width: 'auto' }}
           />
         </button>
 
@@ -90,19 +90,38 @@ export default function Navbar() {
 
         {/* CTA buttons */}
         <div className="hidden md:flex items-center gap-3">
-          <button
-            onClick={() => router.push('/login')}
-            className="px-5 py-2 rounded-lg text-sm font-medium text-slate-600 border border-slate-900/15 bg-transparent cursor-pointer transition-all duration-200 hover:text-slate-900 hover:border-slate-900/30"
-          >
-            Masuk
-          </button>
-          <button 
-            onClick={() => router.push('/register')} 
-            className="inline-flex items-center justify-center gap-2 rounded-lg font-bold text-white bg-linear-to-br from-[#F47920] to-[#D4661A] hover:brightness-110 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 px-5 py-2 text-sm border-0 cursor-pointer"
-          >
-            <Zap size={15} />
-            Mulai Gratis
-          </button>
+          {isLoading ? (
+            <button
+              disabled
+              className="px-5 py-2 rounded-lg text-sm font-medium text-slate-500 border border-slate-900/15 bg-white/50 cursor-wait"
+            >
+              Memuat
+            </button>
+          ) : isAuthenticated ? (
+            <button
+              onClick={() => router.push('/dashboard')}
+              className="inline-flex items-center justify-center gap-2 rounded-lg font-bold text-white bg-linear-to-br from-[#F47920] to-[#D4661A] hover:brightness-110 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 px-5 py-2 text-sm border-0 cursor-pointer"
+            >
+              <LayoutDashboard size={15} />
+              Dashboard
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={() => router.push('/login')}
+                className="px-5 py-2 rounded-lg text-sm font-medium text-slate-600 border border-slate-900/15 bg-transparent cursor-pointer transition-all duration-200 hover:text-slate-900 hover:border-slate-900/30"
+              >
+                Masuk
+              </button>
+              <button 
+                onClick={() => router.push('/register')} 
+                className="inline-flex items-center justify-center gap-2 rounded-lg font-bold text-white bg-linear-to-br from-[#F47920] to-[#D4661A] hover:brightness-110 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 px-5 py-2 text-sm border-0 cursor-pointer"
+              >
+                <Zap size={15} />
+                Mulai Gratis
+              </button>
+            </>
+          )}
         </div>
 
         {/* Hamburger */}
@@ -131,18 +150,36 @@ export default function Navbar() {
               </button>
             ))}
             <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-slate-900/8">
-              <button 
-                onClick={() => { setOpen(false); router.push('/login'); }} 
-                className="px-4 py-3 text-center text-sm border border-slate-900/15 rounded-lg text-slate-600 bg-transparent cursor-pointer hover:text-slate-900 hover:border-slate-900/30 transition-all duration-200"
-              >
-                Masuk
-              </button>
-              <button 
-                onClick={() => { setOpen(false); router.push('/register'); }} 
-                className="inline-flex items-center justify-center gap-2 rounded-lg font-bold text-white bg-linear-to-br from-[#F47920] to-[#D4661A] hover:brightness-110 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 px-4 py-3 text-sm border-0 cursor-pointer"
-              >
-                <Zap size={15} /> Mulai Gratis
-              </button>
+              {isLoading ? (
+                <button
+                  disabled
+                  className="px-4 py-3 text-center text-sm border border-slate-900/15 rounded-lg text-slate-500 bg-white/50 cursor-wait"
+                >
+                  Memuat
+                </button>
+              ) : isAuthenticated ? (
+                <button 
+                  onClick={() => { setOpen(false); router.push('/dashboard'); }} 
+                  className="inline-flex items-center justify-center gap-2 rounded-lg font-bold text-white bg-linear-to-br from-[#F47920] to-[#D4661A] hover:brightness-110 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 px-4 py-3 text-sm border-0 cursor-pointer"
+                >
+                  <LayoutDashboard size={15} /> Dashboard
+                </button>
+              ) : (
+                <>
+                  <button 
+                    onClick={() => { setOpen(false); router.push('/login'); }} 
+                    className="px-4 py-3 text-center text-sm border border-slate-900/15 rounded-lg text-slate-600 bg-transparent cursor-pointer hover:text-slate-900 hover:border-slate-900/30 transition-all duration-200"
+                  >
+                    Masuk
+                  </button>
+                  <button 
+                    onClick={() => { setOpen(false); router.push('/register'); }} 
+                    className="inline-flex items-center justify-center gap-2 rounded-lg font-bold text-white bg-linear-to-br from-[#F47920] to-[#D4661A] hover:brightness-110 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 px-4 py-3 text-sm border-0 cursor-pointer"
+                  >
+                    <Zap size={15} /> Mulai Gratis
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>

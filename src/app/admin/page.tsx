@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { api } from "@/lib/api";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { cn, formatDateTime } from "@/lib/utils";
 import { 
   UsersIcon, 
@@ -14,7 +14,6 @@ import {
   TrendingUpIcon, 
   ClockIcon, 
   ShieldAlertIcon,
-  RefreshCwIcon,
   EyeIcon,
   MousePointerClickIcon
 } from "lucide-react";
@@ -50,7 +49,6 @@ export default function AdminOverviewPage() {
   const [stats, setStats] = useState<GlobalStats | null>(null);
   const [userCount, setUserCount] = useState<number>(0);
   const [recentLogs, setRecentLogs] = useState<AuditLog[]>([]);
-  const [refreshing, setRefreshing] = useState(false);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -68,7 +66,6 @@ export default function AdminOverviewPage() {
       toast.error(message);
     } finally {
       setLoading(false);
-      setRefreshing(false);
     }
   }, [period]);
 
@@ -78,11 +75,6 @@ export default function AdminOverviewPage() {
     }, 0);
     return () => clearTimeout(timer);
   }, [loadData]);
-
-  const handleRefresh = () => {
-    setRefreshing(true);
-    loadData();
-  };
 
   const deliveryRate = stats?.sent && stats.sent > 0 
     ? ((stats.delivered / stats.sent) * 100).toFixed(2)
@@ -117,15 +109,6 @@ export default function AdminOverviewPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button 
-            variant="outline" 
-            size="icon" 
-            onClick={handleRefresh}
-            disabled={refreshing}
-            className="hover:bg-slate-50 dark:hover:bg-slate-900"
-          >
-            <RefreshCwIcon className={`h-4 w-4 text-slate-500 ${refreshing ? "animate-spin" : ""}`} />
-          </Button>
           <Select value={period} onValueChange={(val) => val && setPeriod(val)}>
             <SelectTrigger className="w-36 bg-white dark:bg-slate-950">
               <SelectValue placeholder="Pilih Periode" />
@@ -338,7 +321,7 @@ export default function AdminOverviewPage() {
 
       {/* Recent Audit Logs */}
       <Card className="border border-slate-100 dark:border-slate-800 bg-white/60 dark:bg-slate-950/60 backdrop-blur-md shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader>
           <div>
             <CardTitle className="text-lg font-bold text-slate-800 dark:text-white">
               Log Audit Terkini
@@ -347,12 +330,14 @@ export default function AdminOverviewPage() {
               Aksi administratif yang baru saja dilakukan oleh Administrator.
             </CardDescription>
           </div>
-          <Link 
-            href="/admin/audit-logs" 
-            className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "text-orange-500 font-bold hover:text-orange-600")}
-          >
-            Lihat Semua
-          </Link>
+          <CardAction>
+            <Link 
+              href="/admin/audit-logs" 
+              className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-8 rounded-lg border-slate-200 bg-white px-3 text-xs font-bold text-slate-650 hover:border-orange-200 hover:bg-orange-50 hover:text-orange-600 dark:bg-slate-950 dark:border-slate-800")}
+            >
+              Lihat Semua
+            </Link>
+          </CardAction>
         </CardHeader>
         <CardContent>
           {recentLogs && recentLogs.length > 0 ? (

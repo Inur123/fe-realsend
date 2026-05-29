@@ -28,7 +28,10 @@ import {
   Loader2Icon,
   InfoIcon,
   ZapIcon,
-  RotateCcw
+  RotateCcw,
+  UsersIcon,
+  CrownIcon,
+  PackageIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useConfirm } from "@/hooks/use-confirm";
@@ -122,6 +125,13 @@ export default function UserManagementPage() {
   const totalUsers = filteredUsers.length;
   const totalPages = Math.ceil(totalUsers / perPage) || 1;
   const paginatedUsers = filteredUsers.slice((page - 1) * perPage, page * perPage);
+  const activeUsers = filteredUsers.filter((user) => user.status === "active").length;
+  const suspendedUsers = filteredUsers.filter((user) => user.status === "suspended").length;
+  const adminUsers = filteredUsers.filter((user) => user.role === "admin").length;
+  const nonFreePlanUsers = filteredUsers.filter((user) => {
+    const planName = (user.plan_name || "Free").toLowerCase();
+    return planName !== "free" && planName !== "free tier";
+  }).length;
 
   const getPageNumbers = () => {
     const pages: (number | string)[] = [];
@@ -381,6 +391,94 @@ export default function UserManagementPage() {
         </p>
       </div>
 
+      {/* STAT CARDS */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+        <Card className="border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-xs">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              Total Pengguna
+            </CardTitle>
+            <UsersIcon className="h-4 w-4 text-blue-500" />
+          </CardHeader>
+            <CardContent>
+              <div className="text-xl font-black text-slate-900 dark:text-white">
+              {totalUsers}
+            </div>
+            <p className="text-[10px] text-slate-400 mt-1">
+              {users.length !== totalUsers ? `Dari ${users.length} akun` : "Akun terdaftar"}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-xs">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              Pengguna Aktif
+            </CardTitle>
+            <UserCheckIcon className="h-4 w-4 text-emerald-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl font-black text-slate-900 dark:text-white">
+              {activeUsers}
+            </div>
+            <p className="text-[10px] text-emerald-500 font-medium mt-1">
+              Status active
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-xs">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              Ditangguhkan
+            </CardTitle>
+            <UserXIcon className="h-4 w-4 text-rose-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl font-black text-slate-900 dark:text-white">
+              {suspendedUsers}
+            </div>
+            <p className="text-[10px] text-rose-400 mt-1">
+              Status suspended
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-xs">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              Total Admin
+            </CardTitle>
+            <CrownIcon className="h-4 w-4 text-amber-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl font-black text-slate-900 dark:text-white">
+              {adminUsers}
+            </div>
+            <p className="text-[10px] text-amber-500 font-medium mt-1">
+              Role admin saja
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-xs">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              User Non-Free
+            </CardTitle>
+            <PackageIcon className="h-4 w-4 text-orange-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl font-black text-slate-900 dark:text-white">
+              {nonFreePlanUsers}
+            </div>
+            <p className="text-[10px] text-orange-500 font-medium mt-1">
+              Plan selain Free
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Control Actions & Search */}
       <div className="flex w-full flex-wrap md:flex-nowrap items-end gap-4">
         {/* Search Input */}
@@ -452,7 +550,6 @@ export default function UserManagementPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Semua Paket</SelectItem>
-                <SelectItem value="Free Tier">Free Tier</SelectItem>
                 {plansList.map((p) => (
                   <SelectItem key={p.id} value={p.name}>
                     {p.name}

@@ -91,29 +91,10 @@ export default function BillingPage() {
 
       if (payment === "success" && orderId && !handledPaymentStatus.current) {
         handledPaymentStatus.current = true;
-        toast.info("Mengecek pembayaran Midtrans", {
-          description: "Kami sedang menyinkronkan status transaksi terbaru.",
+        toast.info("Menunggu konfirmasi Midtrans", {
+          description:
+            "Status paket akan berubah otomatis saat webhook pembayaran diterima.",
         });
-        try {
-          const syncedPayment = await api.billing.sync(orderId);
-          if (syncedPayment?.status === "paid") {
-            toast.success("Pembayaran berhasil", {
-              description: "Paket kamu sudah aktif.",
-            });
-            await refreshUser();
-          } else if (syncedPayment?.status === "pending") {
-            toast.info("Pembayaran masih pending", {
-              description:
-                "Selesaikan pembayaran di Midtrans, lalu kembali ke halaman ini.",
-            });
-          }
-        } catch (err: any) {
-          toast.warning("Belum bisa sinkron otomatis", {
-            description:
-              err?.message ||
-              "Webhook Midtrans atau simulator lokal masih bisa memproses pembayaran ini.",
-          });
-        }
       }
 
       const [plansList, invoicesData, billingOverview] = await Promise.all([
@@ -129,30 +110,16 @@ export default function BillingPage() {
     } finally {
       setLoading(false);
     }
-  }, [refreshUser]);
+  }, []);
 
-  // Real-time polling when there is a pending invoice
+  // ── Fetch data on mount ──────────────────────────────────────────────────
   useEffect(() => {
-    const pendingInvoice = invoices.find((inv: any) => inv.status === "pending");
-    if (!pendingInvoice) return;
+    const timer = window.setTimeout(() => {
+      void loadTransactions();
+    }, 0);
 
-    const interval = setInterval(async () => {
-      try {
-        const syncedPayment = await api.billing.sync(pendingInvoice.external_id);
-        if (syncedPayment?.status === "paid") {
-          toast.success("Pembayaran berhasil disinkronkan", {
-            description: "Paket Anda telah aktif secara real-time!",
-          });
-          await refreshUser();
-          loadTransactions(); // Reload transactions lists
-        }
-      } catch {
-        // Fail silently during background polling
-      }
-    }, 5000); // Poll every 5 seconds
-
-    return () => clearInterval(interval);
-  }, [invoices, loadTransactions, refreshUser]);
+    return () => window.clearTimeout(timer);
+  }, [loadTransactions]);
 
   const handleCheckoutSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -84,32 +84,24 @@ export default function DashboardOverview() {
   const openRate = totalSent ? ((overview?.opened || 0) / totalSent) * 100 : 0;
   const clickRate = totalSent ? ((overview?.clicked || 0) / totalSent) * 100 : 0;
 
+  const hasTrafficData = dailyStats.some(
+    (item) => (item.sent || 0) > 0 || (item.delivered || 0) > 0,
+  );
+
   // Render SVG Chart
   const renderSVGChart = () => {
-    if (dailyStats.length === 0) {
-      // Fallback placeholder chart if no analytics data exists
-      const mockPoints = [20, 45, 28, 80, 55, 90, 75];
-      const maxMock = 100;
-      const height = 150;
-      const width = 500;
-      const points = mockPoints
-        .map((val, idx) => `${(idx * (width / 6)).toFixed(1)},${(height - (val / maxMock) * height * 0.8).toFixed(1)}`)
-        .join(" ");
-
+    if (!hasTrafficData) {
       return (
-        <div className="relative h-64 w-full border border-slate-100 dark:border-slate-800 rounded-xl p-4 bg-white/50 dark:bg-slate-900/50">
-          <div className="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-slate-900/70 z-10 rounded-xl">
-            <div className="text-center p-6">
-              <Inbox className="h-8 w-8 mx-auto text-slate-400 mb-2" />
-              <p className="text-sm font-bold text-slate-700 dark:text-slate-300">Belum Ada Trafik Pengiriman</p>
-              <p className="text-xs text-slate-500 max-w-xs mt-1">
-                Kirim email transaksional pertama Anda menggunakan API Key untuk memunculkan chart performa.
-              </p>
-            </div>
+        <div className="flex h-64 w-full items-center justify-center rounded-xl border border-slate-100 bg-white/50 p-8 text-center dark:border-slate-800 dark:bg-slate-900/50">
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-slate-400">
+              Tidak ada data email terekam pada periode ini.
+            </p>
+            <p className="text-xs text-slate-500">
+              Kirim email pertama Anda menggunakan API Key agar grafik performa
+              muncul di sini.
+            </p>
           </div>
-          <svg className="w-full h-full opacity-35" viewBox={`0 0 ${width} ${height}`}>
-            <polyline fill="none" stroke="#cbd5e1" strokeWidth="2" points={points} />
-          </svg>
         </div>
       );
     }

@@ -93,6 +93,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     { title: "Plan Management", url: "/admin/plans", icon: Package },
   ]
 
+  if (user?.role === "super_admin") {
+    adminMainItems.push({ title: "Transactions", url: "/admin/transactions", icon: CreditCard })
+  }
+
   const adminSystemItems = [
     { title: "Audit Logs", url: "/admin/audit-logs", icon: FileText },
   ]

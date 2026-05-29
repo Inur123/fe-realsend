@@ -31,6 +31,7 @@ import {
   UserIcon,
   ShieldCheckIcon,
   MailIcon,
+  HomeIcon,
 } from "lucide-react"
 
 export function NavUser({
@@ -147,6 +148,14 @@ export function NavUser({
                   )}
                 </DropdownMenuItem>
               )}
+              <DropdownMenuItem
+                className="focus:bg-slate-50 dark:focus:bg-slate-900 rounded-lg py-2 cursor-pointer text-slate-700 dark:text-slate-300"
+                render={<Link href="/" />}
+                onClick={handleLinkClick}
+              >
+                <HomeIcon className="mr-2 h-4 w-4 text-slate-400" />
+                Homepage
+              </DropdownMenuItem>
               <DropdownMenuItem
                 className="focus:bg-slate-50 dark:focus:bg-slate-900 rounded-lg py-2 cursor-pointer text-slate-700 dark:text-slate-300"
                 render={<Link href="/dashboard/settings" />}

@@ -2,6 +2,7 @@
 
 import { useState, SVGProps } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Mail, Send, Heart, Check } from 'lucide-react';
 
 const GithubIcon = (props: SVGProps<SVGSVGElement>) => (
@@ -42,34 +43,35 @@ const footerLinks = {
     { label: 'Roadmap', href: '#' },
   ],
   Developer: [
-    { label: 'Dokumentasi', href: '#docs' },
-    { label: 'API Reference', href: '#' },
-    { label: 'SDK & Libraries', href: '#' },
-    { label: 'Status Page', href: '#' },
+    { label: 'Dokumentasi', href: '/docs' },
+    { label: 'API Reference', href: '/docs/api-reference' },
+    { label: 'SDK & Libraries', href: '/docs/sdk-libraries' },
+    { label: 'Status Page', href: '/docs/status-page' },
   ],
 };
 
 const companyLinks = [
-  { label: 'Tentang Kami', href: '#' },
-  { label: 'Blog', href: '#' },
-  { label: 'Karir', href: '#' },
-  { label: 'Kontak', href: '#' },
+  { label: 'Tentang Kami', href: '/company/about' },
+  { label: 'Blog', href: '/company/blog' },
+  { label: 'Karir', href: '/company/careers' },
+  { label: 'Kontak', href: '/company/contact' },
 ];
 
 const legalLinks = [
-  { label: 'Syarat Layanan', href: '#' },
-  { label: 'Kebijakan Privasi', href: '#' },
-  { label: 'Anti-Spam Policy', href: '#' },
-  { label: 'SLA', href: '#' },
+  { label: 'Syarat Layanan', href: '/legal/terms' },
+  { label: 'Kebijakan Privasi', href: '/legal/privacy' },
+  { label: 'Anti-Spam Policy', href: '/legal/anti-spam' },
+  { label: 'SLA', href: '/legal/sla' },
 ];
 
 const socials = [
   { icon: GithubIcon, href: '#', label: 'GitHub' },
   { icon: TwitterXIcon, href: '#', label: 'Twitter/X' },
-  { icon: Mail, href: 'mailto:hello@realsend.id', label: 'Email' },
+  { icon: Mail, href: 'mailto:hello@realsend.web.id', label: 'Email' },
 ];
 
 export default function Footer() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
@@ -93,6 +95,8 @@ export default function Footer() {
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
       }
+    } else if (href && href !== '#') {
+      router.push(href);
     }
   };
 
@@ -153,18 +157,16 @@ export default function Footer() {
               <Image
                 src="/images/logo-realsend.png"
                 alt="RealSend Logo Icon"
-                width={32}
+                width={43}
                 height={32}
-                className="h-8 w-auto object-contain"
-                style={{ width: 'auto' }}
+                className="h-8 w-[43px] object-contain"
               />
               <Image
                 src="/images/text-realsend.png"
                 alt="RealSend Logo Text"
-                width={110}
+                width={117}
                 height={30}
-                className="h-7 w-auto object-contain"
-                style={{ width: 'auto' }}
+                className="h-[30px] w-[117px] object-contain"
               />
             </button>
             <p className="text-sm text-slate-605 leading-relaxed m-0">
@@ -291,7 +293,7 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-8 pb-8">
           {/* Copyright - sits at bottom on mobile (order-2) and left on desktop (order-1) */}
           <p className="text-xs m-0 flex items-center justify-center gap-1 order-2 md:order-1 text-center text-slate-500">
-            © 2025 RealSend. Dibuat dengan <Heart size={12} className="fill-[#EF4444] text-[#EF4444]" style={{ display: 'inline-block' }} /> oleh developer Indonesia.
+            © {new Date().getFullYear()} RealSend. Dibuat dengan <Heart size={12} className="fill-[#EF4444] text-[#EF4444]" style={{ display: 'inline-block' }} /> oleh developer Indonesia.
           </p>
 
           {/* Details & Socials - sits at top on mobile (order-1) and right on desktop (order-2) */}

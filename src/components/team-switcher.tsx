@@ -62,20 +62,18 @@ export function TeamSwitcher({
                   <Image
                     src="/images/logo-realsend.png"
                     alt="RealSend Logo"
-                    width={32}
+                    width={43}
                     height={32}
                     priority
-                    className="h-8 w-auto object-contain shrink-0"
-                    style={{ width: "auto" }}
+                    className="h-8 w-[43px] object-contain shrink-0"
                   />
                   <Image
                     src="/images/text-realsend.png"
                     alt="RealSend Text"
-                    width={100}
+                    width={94}
                     height={24}
                     priority
-                    className="h-6 w-auto object-contain dark:invert shrink-0"
-                    style={{ width: "auto" }}
+                    className="h-6 w-[94px] object-contain dark:invert shrink-0"
                   />
                 </div>
                 {/* Collapsed: show only Icon */}
@@ -83,10 +81,10 @@ export function TeamSwitcher({
                   <Image
                     src="/images/logo-realsend.png"
                     alt="RealSend Icon"
-                    width={26}
+                    width={35}
                     height={26}
                     priority
-                    className="size-6.5 object-contain"
+                    className="h-[26px] w-[35px] object-contain"
                   />
                 </div>
               </>
@@ -145,9 +143,9 @@ export function TeamSwitcher({
                           <Image
                             src="/images/logo-realsend.png"
                             alt="RealSend Logo"
-                            width={18}
+                            width={24}
                             height={18}
-                            className="size-4.5 object-contain"
+                            className="h-[18px] w-[24px] object-contain"
                           />
                         </div>
                       ) : (

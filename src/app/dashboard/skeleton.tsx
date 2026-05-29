@@ -2,89 +2,79 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function DashboardSkeleton() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="space-y-2">
-          <Skeleton className="h-9 w-56" />
-          <Skeleton className="h-4 w-96 max-w-full" />
+          <Skeleton className="h-10 w-80 max-w-full" />
+          <Skeleton className="h-5 w-[620px] max-w-full" />
         </div>
         <div className="flex items-center gap-2">
+          <Skeleton className="h-10 w-44 rounded-lg" />
           <Skeleton className="h-10 w-10 rounded-lg" />
-          <Skeleton className="h-10 w-36 rounded-lg" />
         </div>
       </div>
 
-      {/* Stat Cards — 5 columns */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
+      {/* Stat Cards */}
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
         {[...Array(5)].map((_, i) => (
           <div
             key={i}
-            className="rounded-xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 p-5 space-y-3"
+            className={`rounded-xl border border-slate-100 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-950 ${
+              i === 4 ? "col-span-2 md:col-span-1" : ""
+            }`}
           >
             <div className="flex items-center justify-between">
-              <Skeleton className="h-3 w-20" />
-              <Skeleton className="h-5 w-5 rounded" />
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-8 w-8 rounded-md" />
             </div>
-            <Skeleton className="h-9 w-20" />
-            <Skeleton className="h-3 w-28" />
+            <Skeleton className="mt-7 h-8 w-16" />
+            <Skeleton className="mt-3 h-3 w-28" />
           </div>
         ))}
       </div>
 
-      {/* Rate Cards — 4 columns */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        {[...Array(4)].map((_, i) => (
-          <div
-            key={i}
-            className="rounded-xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 p-5 space-y-2"
-          >
-            <Skeleton className="h-3 w-24" />
-            <Skeleton className="h-7 w-16" />
-            <Skeleton className="h-2 w-full rounded-full" />
-            <Skeleton className="h-3 w-20" />
+      {/* Main Grid */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="rounded-xl border border-slate-100 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950 lg:col-span-2">
+          <div className="flex items-center justify-between">
+            <div className="space-y-2">
+              <Skeleton className="h-6 w-44" />
+              <Skeleton className="h-4 w-72" />
+            </div>
+            <div className="flex gap-4">
+              <Skeleton className="h-4 w-16" />
+              <Skeleton className="h-4 w-24" />
+            </div>
           </div>
-        ))}
-      </div>
-
-      {/* Chart Area */}
-      <div className="rounded-xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 p-6 space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="space-y-1.5">
-            <Skeleton className="h-5 w-48" />
-            <Skeleton className="h-3 w-64" />
-          </div>
-          <div className="flex gap-4">
-            <Skeleton className="h-3 w-20" />
-            <Skeleton className="h-3 w-20" />
+          <div className="mt-6 rounded-xl border border-slate-100 bg-white/50 p-4 dark:border-slate-800 dark:bg-slate-900/50">
+            <Skeleton className="h-64 w-full rounded-lg" />
           </div>
         </div>
-        <Skeleton className="h-56 w-full rounded-xl" />
-      </div>
 
-      {/* Recent Email Logs */}
-      <div className="rounded-xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 overflow-hidden">
-        <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-          <div className="space-y-1">
-            <Skeleton className="h-5 w-40" />
-            <Skeleton className="h-3 w-56" />
+        <div className="rounded-xl border border-slate-100 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-2">
+              <Skeleton className="h-6 w-40" />
+              <Skeleton className="h-4 w-48" />
+            </div>
+            <Skeleton className="h-8 w-20 rounded-md" />
           </div>
-          <Skeleton className="h-8 w-24 rounded-lg" />
-        </div>
-        <div className="divide-y divide-slate-100 dark:divide-slate-800">
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="px-6 py-4 flex items-center justify-between gap-6">
-              <div className="flex-1 space-y-1.5">
-                <Skeleton className="h-4 w-40" />
-                <Skeleton className="h-3 w-28" />
+
+          <div className="mt-8 space-y-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="flex items-start justify-between gap-4">
+                <div className="min-w-0 flex-1 space-y-2">
+                  <Skeleton className="h-5 w-40" />
+                  <Skeleton className="h-4 w-32" />
+                </div>
+                <div className="flex flex-col items-end gap-2">
+                  <Skeleton className="h-6 w-20 rounded-full" />
+                  <Skeleton className="h-3 w-12" />
+                </div>
               </div>
-              <Skeleton className="h-5 w-16 rounded-full" />
-              <Skeleton className="h-3 w-24" />
-            </div>
-          ))}
-        </div>
-        <div className="px-6 py-3 border-t border-slate-100 dark:border-slate-800 flex justify-end">
-          <Skeleton className="h-8 w-28 rounded-lg" />
+            ))}
+          </div>
         </div>
       </div>
     </div>
