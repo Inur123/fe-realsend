@@ -85,6 +85,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(false);
     }
     initAuth();
+
+    // Show pending toast if set during redirect auth flows
+    const pendingToast = sessionStorage.getItem("realsend_login_toast");
+    if (pendingToast) {
+      toast.success("Login berhasil!", { description: pendingToast });
+      sessionStorage.removeItem("realsend_login_toast");
+    }
   }, []);
 
   const login = async (credentials: Record<string, string>) => {

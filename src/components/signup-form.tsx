@@ -188,8 +188,8 @@ function SignupFormContent({
                 className="flex h-11 w-full cursor-pointer items-center justify-center gap-3 rounded-[8px] border border-[#D9E0EA] bg-white text-[14px] font-extrabold text-[#253653] shadow-[0_4px_14px_rgba(15,23,42,0.06)] transition-all hover:border-[#B8C5D8] hover:bg-slate-50"
                 onClick={() => {
                   const apiUrl =
-                    process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"
-                  window.location.href = `${apiUrl}/api/v1/auth/google`
+                    process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api/v1"
+                  window.location.href = `${apiUrl}/auth/google`
                 }}
               >
                 <svg
