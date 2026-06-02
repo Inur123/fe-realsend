@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
@@ -21,8 +21,11 @@ import {
   EyeOffIcon,
 } from "lucide-react";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
+import { toast } from "sonner";
+import { FullPageLoading } from "@/components/full-page-loading";
 
-export function LoginForm({
+function LoginFormContent({
   className,
   ...props
 }: React.ComponentProps<"div">) {
@@ -31,6 +34,25 @@ export function LoginForm({
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
+  const searchParams = useSearchParams();
+
+  const errorParam = searchParams.get("error");
+  const messageParam = searchParams.get("message");
+
+  useEffect(() => {
+    if (errorParam) {
+      toast.error("Login gagal", { description: errorParam });
+      const url = new URL(window.location.href);
+      url.searchParams.delete("error");
+      window.history.replaceState({}, "", url.pathname + url.search);
+    }
+    if (messageParam) {
+      toast.info(messageParam);
+      const url = new URL(window.location.href);
+      url.searchParams.delete("message");
+      window.history.replaceState({}, "", url.pathname + url.search);
+    }
+  }, [errorParam, messageParam]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,6 +61,8 @@ export function LoginForm({
     setLoading(true);
     try {
       await login({ email, password });
+    } catch {
+      // Ignored: error is already handled and displayed as toast inside AuthContext
     } finally {
       setLoading(false);
     }
@@ -223,5 +247,13 @@ export function LoginForm({
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export function LoginForm(props: React.ComponentProps<"div">) {
+  return (
+    <React.Suspense fallback={<FullPageLoading />}>
+      <LoginFormContent {...props} />
+    </React.Suspense>
   );
 }
