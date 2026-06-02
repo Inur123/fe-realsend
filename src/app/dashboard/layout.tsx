@@ -5,12 +5,13 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { api } from "@/lib/api";
 import { AppSidebar } from "@/components/app-sidebar";
+import { FullPageLoading } from "@/components/full-page-loading";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Loader2Icon, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 const PLAN_FALLBACKS: Record<string, { daily_email_limit: number; name: string }> = {
   free: { daily_email_limit: 100, name: "Free" },
@@ -64,11 +65,7 @@ export default function DashboardLayout({
   }, []);
 
   if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-white dark:bg-slate-950">
-        <Loader2Icon className="h-8 w-8 animate-spin text-orange-500" />
-      </div>
-    );
+    return <FullPageLoading />;
   }
 
   if (!isAuthenticated) {

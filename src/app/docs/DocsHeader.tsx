@@ -3,11 +3,13 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { BookOpen, Menu, X, Zap } from "lucide-react";
+import { BookOpen, Menu, X, Zap, LayoutDashboard } from "lucide-react";
 import { sidebarItems } from "./sidebarItems";
+import { useAuth } from "@/context/AuthContext";
 
 export default function DocsHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { isAuthenticated, isLoading } = useAuth();
 
   return (
     <>
@@ -47,20 +49,39 @@ export default function DocsHeader() {
               <Menu size={20} />
             </button>
 
-            <Link
-              href="/login"
-              className="hidden sm:inline-flex h-8 sm:h-9 items-center text-[11px] sm:text-xs font-bold text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 px-3 sm:px-3.5 rounded-lg transition-all"
-            >
-              Masuk
-            </Link>
+            {isLoading ? (
+              <button
+                disabled
+                className="hidden sm:inline-flex h-8 sm:h-9 items-center text-[11px] sm:text-xs font-bold text-slate-400 border border-slate-200 dark:border-slate-800 bg-transparent px-3 sm:px-3.5 rounded-lg cursor-wait"
+              >
+                Memuat
+              </button>
+            ) : isAuthenticated ? (
+              <Link
+                href="/dashboard"
+                className="hidden sm:inline-flex h-8 sm:h-9 items-center text-[11px] sm:text-xs font-bold text-white bg-linear-to-br from-[#F47920] to-[#D4661A] hover:brightness-110 px-3 sm:px-3.5 rounded-lg gap-1.5 shadow-xs transition-all border-0"
+              >
+                <LayoutDashboard className="h-3.5 w-3.5" />
+                <span>Dashboard</span>
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="hidden sm:inline-flex h-8 sm:h-9 items-center text-[11px] sm:text-xs font-bold text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 px-3 sm:px-3.5 rounded-lg transition-all"
+                >
+                  Masuk
+                </Link>
 
-            <Link
-              href="/register"
-              className="hidden sm:inline-flex h-8 sm:h-9 items-center text-[11px] sm:text-xs font-bold text-white bg-linear-to-br from-orange-500 to-amber-600 hover:brightness-110 px-3 sm:px-3.5 rounded-lg gap-1 shadow-xs transition-all"
-            >
-              <Zap className="h-3.5 w-3.5" />
-              <span>Mulai Gratis</span>
-            </Link>
+                <Link
+                  href="/register"
+                  className="hidden sm:inline-flex h-8 sm:h-9 items-center text-[11px] sm:text-xs font-bold text-white bg-linear-to-br from-[#F47920] to-[#D4661A] hover:brightness-110 px-3 sm:px-3.5 rounded-lg gap-1 shadow-xs transition-all border-0"
+                >
+                  <Zap className="h-3.5 w-3.5" />
+                  <span>Mulai Gratis</span>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>

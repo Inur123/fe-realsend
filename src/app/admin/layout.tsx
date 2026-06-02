@@ -4,12 +4,13 @@ import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { AppSidebar } from "@/components/app-sidebar";
+import { FullPageLoading } from "@/components/full-page-loading";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Loader2Icon, ShieldAlert } from "lucide-react";
+import { ShieldAlert } from "lucide-react";
 
 export default function AdminLayout({
   children,
@@ -40,11 +41,7 @@ export default function AdminLayout({
   }, []);
 
   if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-white dark:bg-slate-950">
-        <Loader2Icon className="h-8 w-8 animate-spin text-orange-500" />
-      </div>
-    );
+    return <FullPageLoading />;
   }
 
   if (!isAuthenticated || (user?.role !== "admin" && user?.role !== "super_admin")) {
